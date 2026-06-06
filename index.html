@@ -4,76 +4,168 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Obsidian Aegis | منصة التقييم الأمني</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --obsidian-black:    #05050d;
+            --surface-dark:      #0d0d1c;
+            --border-glow:       rgba(120, 40, 255, 0.35);
+            --border-subtle:     rgba(120, 40, 255, 0.15);
+            --purple-core:       #7b2fff;
+            --purple-bright:     #9b4fff;
+            --purple-dim:        #4a1a99;
+            --text-primary:      #f0f0ff;
+            --text-secondary:    #9090b8;
+            --success:           #22d3ee;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
         body {
-            background-color: #05050d;
-            color: #f0f0ff;
-            font-family: 'Tajawal', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            background: var(--obsidian-black);
+            color: var(--text-primary);
             min-height: 100vh;
-            margin: 0;
+            overflow-x: hidden;
             direction: rtl;
         }
-        .portal {
-            text-align: center;
-            max-width: 600px;
-            padding: 40px;
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        p {
-            color: #9090b8;
-            margin-bottom: 40px;
-        }
-        .cards {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .card {
-            background: #0d0d1c;
-            border: 1px solid rgba(120, 40, 255, 0.35);
-            padding: 30px;
-            border-radius: 8px;
-            width: 250px;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 30px rgba(123, 47, 255, 0.3);
-        }
-        .card h2 {
-            font-size: 1.5rem;
-            margin: 15px 0;
-        }
-        .card .icon {
-            font-size: 3rem;
+
+        /* ═══════════════ BACKGROUND ATMOSPHERE ═══════════════ */
+        .bg-atmosphere { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(123, 47, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(123, 47, 255, 0.04) 1px, transparent 1px); background-size: 48px 48px; animation: gridShift 20s linear infinite; }
+        @keyframes gridShift { from { transform: translate(0, 0); } to { transform: translate(48px, 48px); } }
+        .bg-radial { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 900px; height: 900px; background: radial-gradient(ellipse at center, rgba(123,47,255,0.12) 0%, transparent 70%); animation: pulse 6s ease-in-out infinite alternate; }
+        @keyframes pulse { from { opacity: 0.5; transform: translateX(-50%) scale(0.95); } to { opacity: 1; transform: translateX(-50%) scale(1.05); } }
+        .scanline { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(123,47,255,0.015) 2px, rgba(123,47,255,0.015) 4px); pointer-events: none; animation: scanMove 8s linear infinite; }
+        @keyframes scanMove { from { background-position: 0 0; } to { background-position: 0 200px; } }
+
+        /* ═══════════════ PAGE WRAPPER ═══════════════ */
+        .page-wrapper { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+        /* ═══════════════ HEADER ═══════════════ */
+        .site-header { width: 100%; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); background: rgba(5,5,13,0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100; }
+        .header-logo { display: flex; align-items: center; gap: 14px; }
+        .logo-icon { width: 44px; height: 44px; position: relative; }
+        .logo-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(123,47,255,0.8)); animation: logoGlow 3s ease-in-out infinite alternate; }
+        @keyframes logoGlow { from { filter: drop-shadow(0 0 6px rgba(123,47,255,0.7)); } to { filter: drop-shadow(0 0 14px rgba(155,79,255,1)); } }
+        .logo-text { display: flex; flex-direction: column; gap: 2px; }
+        .logo-title { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: 4px; color: #fff; text-shadow: 0 0 20px rgba(123,47,255,0.6); }
+        .logo-subtitle { font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 6px; color: var(--purple-bright); text-transform: uppercase; }
+        .header-status { display: flex; align-items: center; gap: 24px; }
+        .status-badge { display: flex; align-items: center; gap: 8px; font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 2px; color: var(--text-secondary); text-transform: uppercase; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); animation: dotBlink 2s ease-in-out infinite; }
+        @keyframes dotBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* ═══════════════ HERO ═══════════════ */
+        .hero { width: 100%; max-width: 960px; padding: 80px 24px 50px; text-align: center; animation: heroFadeIn 1s ease-out both; }
+        @keyframes heroFadeIn { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        .hero-tag { display: inline-flex; align-items: center; gap: 10px; font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 4px; color: var(--purple-bright); text-transform: uppercase; margin-bottom: 24px; padding: 6px 18px; border: 1px solid var(--border-glow); border-radius: 2px; background: rgba(123,47,255,0.05); }
+        .hero-tag::before, .hero-tag::after { content: ''; width: 18px; height: 1px; background: var(--purple-bright); }
+        .hero-title { font-family: 'Tajawal', sans-serif; font-size: clamp(28px, 5vw, 48px); font-weight: 900; line-height: 1.2; color: #fff; margin-bottom: 20px; text-shadow: 0 0 40px rgba(123,47,255,0.3); }
+        .hero-title span { color: var(--purple-bright); text-shadow: 0 0 30px rgba(123,47,255,0.7); }
+        .hero-description { font-family: 'Tajawal', sans-serif; font-size: 17px; font-weight: 400; line-height: 2; color: var(--text-secondary); max-width: 680px; margin: 0 auto 30px; }
+        .hero-divider { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 40px; }
+        .divider-line { flex: 1; max-width: 120px; height: 1px; background: linear-gradient(90deg, transparent, var(--purple-core)); }
+        .divider-line.right { background: linear-gradient(90deg, var(--purple-core), transparent); }
+        .divider-diamond { width: 8px; height: 8px; background: var(--purple-core); transform: rotate(45deg); box-shadow: 0 0 10px var(--purple-bright); }
+
+        /* ═══════════════ CARDS ═══════════════ */
+        .cards-container { width: 100%; max-width: 820px; padding: 0 24px 80px; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; justify-content: center; }
+        .card { background: var(--surface-dark); border: 1px solid var(--border-subtle); padding: 36px 28px; text-decoration: none; color: inherit; transition: all 0.3s ease; position: relative; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%); }
+        .card:hover { border-color: var(--border-glow); box-shadow: 0 0 30px rgba(123,47,255,0.15), inset 0 0 30px rgba(123,47,255,0.02); transform: translateY(-4px); }
+        .card::before { content: ''; position: absolute; top: 0; right: 0; width: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--purple-bright)); transition: width 0.4s; }
+        .card:hover::before { width: 100%; }
+        .card-icon { font-size: 2.5rem; margin-bottom: 16px; display: block; }
+        .card h2 { font-family: 'Tajawal', sans-serif; font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; color: #fff; }
+        .card p { font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 400; color: var(--text-secondary); line-height: 1.8; }
+        .card-footer { margin-top: 20px; display: flex; align-items: center; gap: 8px; font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 2px; color: var(--purple-bright); text-transform: uppercase; }
+        .card-footer::after { content: '←'; font-size: 14px; }
+
+        /* ═══════════════ FOOTER ═══════════════ */
+        .site-footer { width: 100%; padding: 24px 40px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .footer-brand { font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 3px; color: rgba(123,47,255,0.4); text-transform: uppercase; }
+        .footer-secure { display: flex; align-items: center; gap: 8px; font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 2px; color: rgba(123,47,255,0.35); text-transform: uppercase; }
+        .footer-secure svg { width: 12px; height: 12px; fill: rgba(123,47,255,0.4); }
+
+        @media (max-width: 640px) {
+            .site-header { padding: 16px 20px; }
+            .hero { padding: 48px 20px 40px; }
+            .cards-container { padding: 0 16px 60px; }
+            .header-status { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="portal">
-        <h1>🛡️ Obsidian Aegis</h1>
-        <p>منصة التقييم الأمني من شركة Obsidian Aegis. اختر نوع التقييم المناسب لك.</p>
+
+<div class="bg-atmosphere">
+    <div class="bg-grid"></div>
+    <div class="bg-radial"></div>
+    <div class="scanline"></div>
+</div>
+
+<div class="page-wrapper">
+    <header class="site-header">
+        <div class="header-logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 44 50" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="22,2 40,12 40,38 22,48 4,38 4,12" fill="none" stroke="#7b2fff" stroke-width="1.5"/>
+                    <polygon points="22,8 35,16 35,34 22,42 9,34 9,16" fill="rgba(123,47,255,0.1)" stroke="#9b4fff" stroke-width="1"/>
+                    <circle cx="22" cy="25" r="4" fill="#7b2fff" opacity="0.8"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <div class="logo-title">OBSIDIAN AEGIS</div>
+                <div class="logo-subtitle">SECURE · DEFEND · DOMINATE</div>
+            </div>
+        </div>
+        <div class="header-status">
+            <div class="status-badge"><div class="status-dot"></div>SYSTEM: PROTECTED</div>
+            <div class="status-badge">AES-256</div>
+            <div class="status-badge">ZERO TRUST</div>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="hero-tag">منصة التقييم الأمني</div>
+        <h1 class="hero-title">قيّم مستوى <span>حمايتك الرقمية</span></h1>
+        <p class="hero-description">
+            منصة Obsidian Aegis تقدم لك أداتين متكاملتين لتقييم أمنك الرقمي. سواء كنت فرداً تبحث عن حماية بياناتك الشخصية، أو مؤسسة تحتاج إلى تقييم شامل لبنيتها التحتية.
+        </p>
+        <div class="hero-divider">
+            <div class="divider-line"></div>
+            <div class="divider-diamond"></div>
+            <div class="divider-line right"></div>
+        </div>
+    </div>
+
+    <div class="cards-container">
         <div class="cards">
             <a href="sentinel.html" class="card">
-                <div class="icon">👤</div>
+                <span class="card-icon">👤</span>
                 <h2>Obsidian Sentinel</h2>
-                <p>تقييم الأمن الشخصي للأفراد. اعرف درجة حمايتك الرقمية في دقيقتين.</p>
+                <p>تقييم الأمن الشخصي للأفراد. اعرف درجة حمايتك الرقمية في دقيقتين. مناسب لكل شخص يريد حماية بياناته وحساباته.</p>
+                <div class="card-footer">ابدأ التقييم</div>
             </a>
             <a href="https://raoof212.github.io/obsidian-enterprise-assessment/" class="card">
-                <div class="icon">🏢</div>
+                <span class="card-icon">🏢</span>
                 <h2>تقييم المؤسسات</h2>
-                <p>تقييم شامل للشركات والمؤسسات. تحليل متكامل للبنية التحتية والسياسات.</p>
+                <p>تقييم شامل للشركات والمؤسسات. تحليل متكامل للبنية التحتية، السياسات، الوعي الأمني، والامتثال للمعايير.</p>
+                <div class="card-footer">ابدأ التقييم</div>
             </a>
         </div>
     </div>
+
+    <footer class="site-footer">
+        <div class="footer-brand">OBSIDIAN AEGIS SENTINEL™ — ASSESSMENT PLATFORM V2.0</div>
+        <div class="footer-secure">
+            <svg viewBox="0 0 16 20"><path d="M8 1L1 5v6c0 4.4 3 8.5 7 9.5C12 19.5 15 15.4 15 11V5L8 1z"/></svg>
+            مشفر بـ AES-256 · لا تُجمع بيانات شخصية بدون إذن
+        </div>
+    </footer>
+</div>
+
 </body>
 </html>
