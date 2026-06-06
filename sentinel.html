@@ -1,287 +1,385 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Obsidian Sentinel | تقييم الدرع الرقمي الشخصي</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 95,30 95,70 50,95 5,70 5,30' fill='%230B0B0B' stroke='%237B2FBE' stroke-width='3'/%3E%3Cpolygon points='50,15 85,35 85,65 50,85 15,65 15,35' fill='%23121212' stroke='%239B4DDB' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='12' fill='%237B2FBE'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obsidian Sentinel | تقييم الدرع الرقمي الشخصي</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 95,30 95,70 50,95 5,70 5,30' fill='%230B0B0B' stroke='%237B2FBE' stroke-width='3'/%3E%3Cpolygon points='50,15 85,35 85,65 50,85 15,65 15,35' fill='%23121212' stroke='%239B4DDB' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='12' fill='%237B2FBE'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Arabic:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --ob:#04040c; --dp:#07071a; --sa:#0b0b1f; --sb:#0f0f28; --sc:#141435;
+            --bd:rgba(120,40,255,.12); --bm:rgba(120,40,255,.28); --bb:rgba(120,40,255,.55);
+            --p9:#4a0dcc; --p7:#6b22e8; --p5:#7b2fff; --p4:#9b4fff; --p3:#b97dff; --p2:#d4aaff;
+            --pg:rgba(123,47,255,.7); --ps:rgba(123,47,255,.15);
+            --cy:#22d3ee; --rd:#f43f5e; --gd:#fbbf24;
+            --w:#f4f4ff; --gh:#c8c8e8; --gm:#8888b0; --gl:#44445a;
+            --fa:'IBM Plex Arabic','Cairo','Tajawal',sans-serif;
+            --fe:'Orbitron',monospace; --fu:'Rajdhani',monospace;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{font-family:var(--fa);background:var(--ob);color:var(--w);min-height:100vh;overflow-x:hidden;direction:rtl;-webkit-font-smoothing:antialiased}
 
-<style>
-:root {
-  --obsidian-black:    #05050d;
-  --surface-dark:      #0d0d1c;
-  --border-glow:       rgba(120, 40, 255, 0.35);
-  --border-subtle:     rgba(120, 40, 255, 0.15);
-  --purple-core:       #7b2fff;
-  --purple-bright:     #9b4fff;
-  --purple-dim:        #4a1a99;
-  --text-primary:      #f0f0ff;
-  --text-secondary:    #9090b8;
-  --success:           #22d3ee;
-  --danger:            #f43f5e;
-  --warning:           #fbbf24;
-}
+        .atmo{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+        .ag{position:absolute;inset:-100px;background-image:linear-gradient(rgba(123,47,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(123,47,255,.035) 1px,transparent 1px);background-size:56px 56px;animation:gd 30s linear infinite}
+        @keyframes gd{from{transform:translate(0,0)}to{transform:translate(56px,56px)}}
+        .aw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(900px,100vw);opacity:.025}
+        .ah1{position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:1100px;height:700px;background:radial-gradient(ellipse at center,rgba(123,47,255,.14) 0%,transparent 65%);animation:hp 7s ease-in-out infinite alternate}
+        @keyframes hp{from{opacity:.6;transform:translateX(-50%) scaleY(.9)}to{opacity:1;transform:translateX(-50%) scaleY(1.1)}}
+        .ah2{position:absolute;bottom:-15%;right:-10%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(75,12,200,.09) 0%,transparent 70%);animation:fb 12s ease-in-out infinite alternate}
+        @keyframes fb{from{transform:translate(0,0)}to{transform:translate(-25px,-25px)}}
+        .ah3{position:absolute;top:30%;left:-10%;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(60,8,180,.07) 0%,transparent 70%);animation:fc 15s ease-in-out infinite alternate}
+        @keyframes fc{from{transform:translate(0,0)}to{transform:translate(25px,20px)}}
+        .asl{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(123,47,255,.012) 3px,rgba(123,47,255,.012) 4px)}
+        .abm{position:absolute;width:100%;height:3px;background:linear-gradient(90deg,transparent 0%,rgba(123,47,255,.35) 40%,rgba(155,79,255,.6) 50%,rgba(123,47,255,.35) 60%,transparent 100%);top:0;animation:bs 8s ease-in-out infinite}
+        @keyframes bs{0%{top:0%;opacity:0}5%{opacity:1}95%{opacity:.7}100%{top:100%;opacity:0}}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Tajawal', 'Cairo', sans-serif;
-  background: var(--obsidian-black);
-  color: var(--text-primary);
-  min-height: 100vh;
-  overflow-x: hidden;
-  direction: rtl;
-}
+        .hc{position:fixed;z-index:2;pointer-events:none;font-family:var(--fu);font-size:9px;letter-spacing:1.5px;text-transform:uppercase}
+        .htl{top:80px;left:16px}.htr{top:80px;right:16px;text-align:right}
+        .hbl{bottom:50px;left:16px}.hbr{bottom:50px;right:16px;text-align:right}
+        .hct{color:var(--p4);font-size:8px;letter-spacing:2px;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+        .hct::before{content:'';display:inline-block;width:16px;height:1px;background:var(--p5)}
+        .htr .hct,.hbr .hct{flex-direction:row-reverse}.htr .hct::before,.hbr .hct::before{order:1}
+        .hcl{color:var(--gl);display:block;margin-bottom:3px;font-size:8px}
+        .hcl.a{color:var(--cy)}.hcl.w{color:var(--gd)}
+        .hbar{display:flex;gap:2px;margin-top:5px}
+        .hbs{width:12px;height:3px;background:var(--gl)}
+        .hbs.on{background:var(--p5);box-shadow:0 0 4px var(--p5)}.hbs.cy{background:var(--cy);box-shadow:0 0 4px var(--cy)}
+        @media(max-width:900px){.hc{display:none}}
 
-/* ═══════════════ BACKGROUND ATMOSPHERE ═══════════════ */
-.bg-atmosphere { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-.bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(123, 47, 255, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(123, 47, 255, 0.04) 1px, transparent 1px); background-size: 48px 48px; animation: gridShift 20s linear infinite; }
-@keyframes gridShift { from { transform: translate(0, 0); } to { transform: translate(48px, 48px); } }
-.bg-radial { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 900px; height: 900px; background: radial-gradient(ellipse at center, rgba(123,47,255,0.12) 0%, transparent 70%); animation: pulse 6s ease-in-out infinite alternate; }
-@keyframes pulse { from { opacity: 0.5; transform: translateX(-50%) scale(0.95); } to { opacity: 1; transform: translateX(-50%) scale(1.05); } }
-.scanline { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(123,47,255,0.015) 2px, rgba(123,47,255,0.015) 4px); pointer-events: none; animation: scanMove 8s linear infinite; }
-@keyframes scanMove { from { background-position: 0 0; } to { background-position: 0 200px; } }
+        .page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center}
 
-/* ═══════════════ PAGE WRAPPER ═══════════════ */
-.page-wrapper { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+        .hdr{width:100%;padding:14px 36px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);background:rgba(4,4,12,.85);backdrop-filter:blur(24px);position:sticky;top:0;z-index:50}
+        .hbrand{display:flex;align-items:center;gap:16px}
+        .hshield{width:42px;height:48px;flex-shrink:0;filter:drop-shadow(0 0 10px rgba(123,47,255,.9));animation:sg 3s ease-in-out infinite alternate}
+        @keyframes sg{from{filter:drop-shadow(0 0 7px rgba(123,47,255,.7))}to{filter:drop-shadow(0 0 14px rgba(155,79,255,1))}}
+        .hbt{display:flex;flex-direction:column;gap:2px}
+        .hn{font-family:var(--fe);font-size:17px;font-weight:900;letter-spacing:3px;color:#fff;text-shadow:0 0 20px rgba(123,47,255,.7)}
+        .htg{font-family:var(--fu);font-size:9px;letter-spacing:5px;color:var(--p4);text-transform:uppercase}
+        .hst{display:flex;align-items:center;gap:20px}
+        .sp{display:flex;align-items:center;gap:7px;font-family:var(--fu);font-size:10px;letter-spacing:2px;color:var(--gm);text-transform:uppercase}
+        .sd{width:6px;height:6px;border-radius:50%}
+        .sd.li{background:var(--cy);box-shadow:0 0 6px var(--cy);animation:bl 2s ease-in-out infinite}
+        .sd.pr{background:var(--p4);box-shadow:0 0 6px var(--p4);animation:bl 3s ease-in-out infinite}
+        @keyframes bl{0%,100%{opacity:1}50%{opacity:.25}}
 
-/* ═══════════════ HEADER ═══════════════ */
-.site-header { width: 100%; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); background: rgba(5,5,13,0.8); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100; }
-.header-logo { display: flex; align-items: center; gap: 14px; }
-.logo-icon { width: 44px; height: 44px; position: relative; }
-.logo-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(123,47,255,0.8)); animation: logoGlow 3s ease-in-out infinite alternate; }
-@keyframes logoGlow { from { filter: drop-shadow(0 0 6px rgba(123,47,255,0.7)); } to { filter: drop-shadow(0 0 14px rgba(155,79,255,1)); } }
-.logo-text { display: flex; flex-direction: column; gap: 2px; }
-.logo-title { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: 4px; color: #fff; text-shadow: 0 0 20px rgba(123,47,255,0.6); }
-.logo-subtitle { font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 6px; color: var(--purple-bright); text-transform: uppercase; }
-.header-status { display: flex; align-items: center; gap: 24px; }
-.status-badge { display: flex; align-items: center; gap: 8px; font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 2px; color: var(--text-secondary); text-transform: uppercase; }
-.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); box-shadow: 0 0 6px var(--success); animation: dotBlink 2s ease-in-out infinite; }
-@keyframes dotBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .hero{width:100%;max-width:980px;padding:60px 24px 40px;text-align:center;animation:hi 1.1s cubic-bezier(.16,1,.3,1) both}
+        @keyframes hi{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:translateY(0)}}
+        .hew{display:flex;justify-content:center;margin-bottom:28px;position:relative}
+        .hem{width:140px;height:160px;position:relative;z-index:2;filter:drop-shadow(0 0 30px rgba(123,47,255,.9)) drop-shadow(0 0 60px rgba(123,47,255,.4));animation:ef 5s ease-in-out infinite alternate}
+        @keyframes ef{from{transform:translateY(0) scale(1)}to{transform:translateY(-8px) scale(1.02);filter:drop-shadow(0 0 40px rgba(155,79,255,1)) drop-shadow(0 0 80px rgba(123,47,255,.55))}}
+        .hor{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);border-radius:50%;border:1px solid rgba(123,47,255,.18)}
+        .hor1{width:200px;height:200px;animation:os 20s linear infinite}
+        .hor2{width:260px;height:260px;animation:os 30s linear infinite reverse}
+        .hor1::after,.hor2::after{content:'';position:absolute;top:-3px;left:50%;width:6px;height:6px;border-radius:50%;background:var(--p4);box-shadow:0 0 8px var(--p4);transform:translateX(-50%)}
+        @keyframes os{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+        .hey{display:inline-flex;align-items:center;gap:12px;font-family:var(--fu);font-size:10px;letter-spacing:4px;color:var(--p3);text-transform:uppercase;margin-bottom:16px;padding:6px 20px;border:1px solid var(--bm);background:rgba(123,47,255,.05)}
+        .hey::before,.hey::after{content:'';width:20px;height:1px;background:var(--p5)}
+        .hh1{font-size:clamp(24px,4vw,42px);font-weight:900;line-height:1.25;color:#fff;margin-bottom:12px;text-shadow:0 0 50px rgba(123,47,255,.25);letter-spacing:-.01em}
+        .hh1 .ac{color:var(--p4);text-shadow:0 0 30px rgba(123,47,255,.75)}
+        .hsb{font-size:16px;font-weight:400;line-height:2.0;color:var(--gm);max-width:600px;margin:0 auto 30px}
 
-/* ═══════════════ PROGRESS BAR ═══════════════ */
-.progress-container { width: 100%; max-width: 820px; padding: 0 24px; margin: 40px auto 30px; }
-.progress-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.progress-label { font-family: 'Tajawal', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
-.progress-label::before { content: ''; display: inline-block; width: 4px; height: 12px; background: var(--purple-bright); }
-.progress-count { font-family: 'Orbitron', sans-serif; font-size: 12px; color: var(--purple-bright); }
-.progress-track { width: 100%; height: 4px; background: rgba(123,47,255,0.1); border-radius: 2px; overflow: hidden; position: relative; }
-.progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple-dim), var(--purple-bright), #c084fc); border-radius: 2px; transition: width 0.4s ease; position: relative; box-shadow: 0 0 12px rgba(123,47,255,0.6); width: 0%; }
-.progress-fill::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 40%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3)); animation: shimmer 2s linear infinite; }
-@keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(350%); } }
-.progress-steps { display: flex; justify-content: space-between; margin-top: 16px; }
-.step-dot { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: default; transition: all 0.3s; }
-.step-circle { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid rgba(123,47,255,0.25); display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 9px; color: var(--text-secondary); background: var(--surface-dark); transition: all 0.3s; }
-.step-circle.active { border-color: var(--purple-bright); color: var(--purple-bright); box-shadow: 0 0 12px rgba(123,47,255,0.5); }
-.step-circle.done { border-color: var(--success); background: rgba(34,211,238,0.1); color: var(--success); box-shadow: 0 0 8px rgba(34,211,238,0.4); }
-.step-name { font-family: 'Tajawal', sans-serif; font-size: 10px; color: var(--text-secondary); text-align: center; white-space: nowrap; }
-.step-dot.active .step-name { color: var(--purple-bright); }
-.step-dot.done  .step-name  { color: var(--success); }
+        .pw{width:100%;max-width:820px;padding:0 24px;margin-bottom:40px;animation:fu 0.8s 0.4s ease-out both}
+        @keyframes fu{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .pt{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+        .pl{font-size:12px;font-weight:500;color:var(--gm);display:flex;align-items:center;gap:8px}
+        .pl::before{content:'';display:inline-block;width:4px;height:14px;background:var(--p5)}
+        .pn{font-family:var(--fe);font-size:11px;color:var(--p4)}
+        .pr{width:100%;height:3px;background:rgba(123,47,255,.08);overflow:hidden;margin-bottom:16px}
+        .pf{height:100%;background:linear-gradient(90deg,var(--p9),var(--p5),var(--p3));transition:width .7s cubic-bezier(.4,0,.2,1);position:relative;box-shadow:0 0 12px rgba(123,47,255,.6);width:0%}
+        .pf::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35));animation:sh 2.5s linear infinite}
+        @keyframes sh{from{transform:translateX(-100%)}to{transform:translateX(300%)}}
+        .ps{display:flex;justify-content:space-between}
+        .sn{display:flex;flex-direction:column;align-items:center;gap:6px}
+        .sr{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-family:var(--fe);font-size:9px;color:var(--gl);background:var(--sa);transition:all .3s}
+        .sr.active{border-color:var(--p5);color:var(--p4);box-shadow:0 0 14px rgba(123,47,255,.5);background:rgba(123,47,255,.06)}
+        .sr.done{border-color:var(--cy);color:var(--cy);background:rgba(34,211,238,.08);box-shadow:0 0 10px rgba(34,211,238,.3)}
+        .sl{font-size:10px;font-weight:400;color:var(--gl);text-align:center;white-space:nowrap}
+        .sn.active .sl{color:var(--p3)}.sn.done .sl{color:var(--cy)}
 
-/* ═══════════════ SURVEY SECTION ═══════════════ */
-.survey-wrapper { width: 100%; max-width: 820px; padding: 0 24px; margin-bottom: 60px; }
-.question-card { background: var(--surface-dark); border: 1px solid var(--border-subtle); padding: 28px 30px; margin-bottom: 20px; position: relative; transition: border-color 0.3s, box-shadow 0.3s; clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%); }
-.question-card:hover { border-color: var(--border-glow); box-shadow: 0 0 20px rgba(123,47,255,0.08), inset 0 0 20px rgba(123,47,255,0.02); }
-.q-number { font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 3px; color: var(--purple-bright); text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-.q-number::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-subtle), transparent); }
-.q-text { font-family: 'Tajawal', sans-serif; font-size: 16px; font-weight: 600; color: var(--text-primary); line-height: 1.9; margin-bottom: 20px; }
-.options { display: flex; flex-direction: column; gap: 10px; }
-.option-item { display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: rgba(8,8,15,0.6); border: 1px solid rgba(123,47,255,0.15); cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden; }
-.option-item:hover { background: rgba(123,47,255,0.06); border-color: rgba(123,47,255,0.4); }
-.option-item.selected { background: rgba(123,47,255,0.1); border-color: var(--purple-core); box-shadow: 0 0 12px rgba(123,47,255,0.15); }
-.option-item .custom-radio { width: 18px; height: 18px; border: 1.5px solid rgba(123,47,255,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.25s; }
-.option-item.selected .custom-radio { border-color: var(--purple-bright); box-shadow: 0 0 6px rgba(123,47,255,0.5); }
-.option-item.selected .custom-radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--purple-bright); box-shadow: 0 0 6px rgba(123,47,255,0.8); }
-.option-label { font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 500; color: var(--text-secondary); line-height: 1.5; flex: 1; transition: color 0.25s; }
-.option-item.selected .option-label { color: var(--text-primary); }
-.option-score { font-size: 0.8rem; color: #6a6a8a; margin-top: 0.2rem; }
+        .sw{width:100%;max-width:820px;padding:0 24px;margin-bottom:80px}
+        .qc{background:var(--sa);border:1px solid var(--bd);padding:26px 28px;margin-bottom:18px;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,0 100%)}
+        .qc:hover{border-color:var(--bm);box-shadow:0 0 24px rgba(123,47,255,.07)}
+        .qc::before{content:'';position:absolute;top:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--p5),transparent);transition:width .45s}
+        .qc:hover::before{width:100%}
+        .qnr{display:flex;align-items:center;gap:8px;font-family:var(--fu);font-size:9px;letter-spacing:3px;color:var(--p3);text-transform:uppercase;margin-bottom:8px}
+        .qnr::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--bd),transparent)}
+        .qt{font-size:16px;font-weight:600;color:var(--w);line-height:1.8;margin-bottom:6px}
+        .oc{display:flex;flex-direction:column;gap:9px}
+        .op{display:flex;align-items:flex-start;gap:14px;padding:13px 17px;background:rgba(7,7,26,.6);border:1px solid rgba(123,47,255,.13);cursor:pointer;transition:all .22s;position:relative;overflow:hidden}
+        .op:hover{background:rgba(123,47,255,.05);border-color:rgba(123,47,255,.38)}
+        .op.selected{background:rgba(123,47,255,.09);border-color:var(--p5);box-shadow:0 0 14px rgba(123,47,255,.13)}
+        .op.selected::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(123,47,255,.05) 0%,transparent 55%)}
+        .op input{display:none}
+        .or{width:17px;height:17px;flex-shrink:0;margin-top:2px;border:1.5px solid rgba(123,47,255,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .22s}
+        .op.selected .or{border-color:var(--p4);box-shadow:0 0 7px rgba(123,47,255,.5)}
+        .op.selected .or::after{content:'';width:7px;height:7px;border-radius:50%;background:var(--p4);box-shadow:0 0 5px rgba(123,47,255,.8)}
+        .ol{font-size:14px;font-weight:500;color:var(--gm);line-height:1.6;flex:1;transition:color .22s}
+        .op.selected .ol{color:var(--w)}
+        .option-score{font-size:0.8rem;color:#6a6a8a;margin-top:0.2rem}
 
-/* Buttons */
-.btn-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 30px; padding: 20px 0; border-top: 1px solid var(--border-subtle); flex-wrap: wrap; }
-.btn-primary { display: inline-flex; align-items: center; gap: 12px; padding: 15px 40px; background: linear-gradient(135deg, var(--purple-dim) 0%, var(--purple-core) 100%); color: #fff; border: 1px solid var(--purple-bright); font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden; text-decoration: none; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%); }
-.btn-primary:hover { box-shadow: 0 0 24px rgba(123,47,255,0.5), 0 0 60px rgba(123,47,255,0.2); transform: translateY(-1px); }
-.btn-secondary { display: inline-flex; align-items: center; gap: 12px; padding: 14px 32px; background: transparent; color: var(--text-secondary); border: 1px solid rgba(123,47,255,0.25); font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.3s; }
-.btn-secondary:hover { border-color: rgba(123,47,255,0.5); color: var(--text-primary); background: rgba(123,47,255,0.05); }
-.btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; transform: none; box-shadow: none; }
-.hidden { display: none !important; }
+        .br{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:34px;padding-top:22px;border-top:1px solid var(--bd);flex-wrap:wrap}
+        .bp{display:inline-flex;align-items:center;gap:11px;padding:14px 38px;background:linear-gradient(135deg,var(--p9) 0%,var(--p5) 100%);color:#fff;border:1px solid var(--p4);font-family:var(--fa);font-size:15px;font-weight:700;cursor:pointer;transition:all .28s;position:relative;overflow:hidden;clip-path:polygon(0 0,calc(100% - 13px) 0,100% 13px,100% 100%,0 100%)}
+        .bp::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 55%);opacity:0;transition:opacity .3s}
+        .bp:hover::before{opacity:1}
+        .bp:hover{box-shadow:0 0 28px rgba(123,47,255,.5),0 0 70px rgba(123,47,255,.18);transform:translateY(-1px)}
+        .bp:active{transform:translateY(1px)}
+        .bs{display:inline-flex;align-items:center;gap:11px;padding:13px 30px;background:transparent;color:var(--gm);border:1px solid rgba(123,47,255,.22);font-family:var(--fa);font-size:15px;font-weight:500;cursor:pointer;transition:all .28s}
+        .bs:hover{border-color:rgba(123,47,255,.5);color:var(--w);background:rgba(123,47,255,.05)}
+        .btn:disabled{opacity:0.4;cursor:not-allowed;pointer-events:none;transform:none;box-shadow:none}
+        .hidden{display:none !important}
 
-/* Result Dashboard */
-.result-dashboard { background: rgba(13,13,28,0.95); border: 1px solid var(--border-glow); padding: 40px; text-align: center; backdrop-filter: blur(20px); max-width: 600px; margin: 0 auto; }
-.big-score { font-family: 'Orbitron', sans-serif; font-size: 64px; font-weight: 900; text-shadow: 0 0 30px currentColor; }
-.score-circle-container { margin: 20px 0; }
-.score-label { font-size: 24px; font-weight: 700; margin-top: 10px; }
-.analysis-block { display: flex; gap: 20px; margin: 30px 0; text-align: right; }
-.analysis-column { flex: 1; background: rgba(8,8,15,0.6); border: 1px solid rgba(123,47,255,0.15); padding: 20px; }
-.analysis-column h4 { color: var(--text-primary); margin-bottom: 10px; }
-.analysis-column ul { list-style: none; padding: 0; }
-.analysis-column li { color: var(--text-secondary); padding: 4px 0; font-size: 14px; }
-.recommendation-box { background: rgba(123,47,255,0.05); border: 1px solid var(--border-glow); padding: 20px; margin: 20px 0; font-size: 16px; color: var(--text-primary); }
-.action-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 30px; }
-.email-send-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
-.email-send-group input { width: 250px; padding: 12px 15px; background: rgba(8,8,15,0.8); border: 1px solid rgba(123,47,255,0.3); color: var(--text-primary); font-family: 'Tajawal', sans-serif; }
-.completion-id { font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 3px; color: rgba(123,47,255,0.5); text-transform: uppercase; margin-top: 20px; }
+        .result-dashboard{background:rgba(13,13,28,0.95);border:1px solid var(--bm);padding:40px;text-align:center;backdrop-filter:blur(20px);max-width:600px;margin:0 auto;animation:si .55s cubic-bezier(.16,1,.3,1)}
+        @keyframes si{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+        .big-score{font-family:var(--fe);font-size:64px;font-weight:900;text-shadow:0 0 30px currentColor}
+        .score-circle-container{margin:20px 0}
+        .score-label{font-size:24px;font-weight:700;margin-top:10px}
+        .analysis-block{display:flex;gap:20px;margin:30px 0;text-align:right}
+        .analysis-column{flex:1;background:rgba(8,8,15,0.6);border:1px solid rgba(123,47,255,0.15);padding:20px}
+        .analysis-column h4{color:var(--w);margin-bottom:10px}
+        .analysis-column ul{list-style:none;padding:0}
+        .analysis-column li{color:var(--gm);padding:4px 0;font-size:14px}
+        .recommendation-box{background:rgba(123,47,255,0.05);border:1px solid var(--bm);padding:20px;margin:20px 0;font-size:16px;color:var(--w)}
+        .action-buttons{display:flex;gap:15px;flex-wrap:wrap;justify-content:center;margin-top:30px}
+        .email-send-group{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+        .email-send-group input{width:250px;padding:12px 15px;background:rgba(8,8,15,0.8);border:1px solid rgba(123,47,255,0.3);color:var(--w);font-family:var(--fa)}
+        .completion-id{font-family:var(--fu);font-size:11px;letter-spacing:3px;color:rgba(123,47,255,0.5);text-transform:uppercase;margin-top:20px}
+        .field-input{width:100%;padding:12px 15px;background:rgba(8,8,15,0.8);border:1px solid rgba(123,47,255,0.3);color:var(--w);font-family:var(--fa);margin:8px 0;border-radius:0;outline:none}
+        .field-input:focus{border-color:var(--p5);box-shadow:0 0 0 2px rgba(123,47,255,0.15)}
 
-/* Footer */
-.site-footer { width: 100%; padding: 24px 40px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.footer-brand { font-family: 'Rajdhani', sans-serif; font-size: 11px; letter-spacing: 3px; color: rgba(123,47,255,0.4); text-transform: uppercase; }
-.footer-secure { display: flex; align-items: center; gap: 8px; font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 2px; color: rgba(123,47,255,0.35); text-transform: uppercase; }
-.footer-secure svg { width: 12px; height: 12px; fill: rgba(123,47,255,0.4); }
+        .ftr{width:100%;padding:22px 36px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+        .fb{font-family:var(--fu);font-size:10px;letter-spacing:3px;color:rgba(123,47,255,.35);text-transform:uppercase}
+        .fs{display:flex;align-items:center;gap:7px;font-family:var(--fu);font-size:9px;letter-spacing:2px;color:rgba(123,47,255,.3);text-transform:uppercase}
+        .fs svg{width:11px;height:11px;fill:rgba(123,47,255,.35)}
 
-@media (max-width: 640px) {
-  .site-header { padding: 16px 20px; }
-  .progress-container, .survey-wrapper { padding: 0 16px; }
-  .progress-steps .step-name { display: none; }
-  .btn-row { flex-direction: column-reverse; }
-  .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
-  .header-status { display: none; }
-  .analysis-block { flex-direction: column; }
-}
-</style>
+        @media(max-width:640px){
+            .hdr{padding:12px 18px}.hero{padding:40px 18px 32px}
+            .pw,.sw{padding:0 14px}
+            .br{flex-direction:column-reverse}.bp,.bs{width:100%;justify-content:center}
+            .analysis-block{flex-direction:column}
+            .hst{display:none}.hor1,.hor2{display:none}.hem{width:110px;height:125px}
+        }
+    </style>
 </head>
 <body>
 
-<div class="bg-atmosphere">
-  <div class="bg-grid"></div>
-  <div class="bg-radial"></div>
-  <div class="scanline"></div>
+<div class="atmo">
+    <div class="ag"></div>
+    <div class="ah1"></div><div class="ah2"></div><div class="ah3"></div>
+    <div class="asl"></div><div class="abm"></div>
 </div>
 
-<div class="page-wrapper">
-  <header class="site-header">
-    <div class="header-logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 44 50" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="22,2 40,12 40,38 22,48 4,38 4,12" fill="none" stroke="#7b2fff" stroke-width="1.5"/>
-          <polygon points="22,8 35,16 35,34 22,42 9,34 9,16" fill="rgba(123,47,255,0.1)" stroke="#9b4fff" stroke-width="1"/>
-          <circle cx="22" cy="25" r="4" fill="#7b2fff" opacity="0.8"/>
-        </svg>
-      </div>
-      <div class="logo-text">
-        <div class="logo-title">OBSIDIAN AEGIS</div>
-        <div class="logo-subtitle">SECURE · DEFEND · DOMINATE</div>
-      </div>
-    </div>
-    <div class="header-status">
-      <div class="status-badge"><div class="status-dot"></div>SYSTEM: PROTECTED</div>
-      <div class="status-badge">AES-256</div>
-      <div class="status-badge">ZERO TRUST</div>
-    </div>
-  </header>
+<div class="hc htl">
+    <div class="hct">Threat Intelligence</div>
+    <span class="hcl a">GLOBAL CYBER DEFENSE</span>
+    <span class="hcl">STATUS: MONITORING</span>
+    <span class="hcl">FEED: OA-SENTINEL</span>
+    <div class="hbar"><div class="hbs on"></div><div class="hbs on"></div><div class="hbs on"></div><div class="hbs"></div><div class="hbs"></div></div>
+</div>
+<div class="hc htr">
+    <div class="hct">Obsidian Protocol</div>
+    <span class="hcl a">0x7A6FE86</span>
+    <span class="hcl">ENC: AES-256-GCM</span>
+    <span class="hcl w">ZERO TRUST MODE</span>
+</div>
+<div class="hc hbl">
+    <div class="hct">System Status</div>
+    <span class="hcl a">PROTECTED</span>
+    <span class="hcl">NETWORK: ONLINE</span>
+    <span class="hcl">TLS: 1.3</span>
+</div>
+<div class="hc hbr">
+    <div class="hct">Live Monitoring</div>
+    <div class="hbar" style="justify-content:flex-end"><div class="hbs cy"></div><div class="hbs cy"></div><div class="hbs cy"></div><div class="hbs cy"></div><div class="hbs"></div></div>
+    <span class="hcl">ZERO COMPROMISE</span>
+</div>
 
-  <div class="progress-container" id="progressContainer">
-    <div class="progress-header">
-      <span class="progress-label">تقدم التقييم</span>
-      <span class="progress-count" id="progressCount">0 / 6</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
-    <div class="progress-steps" id="progressSteps"></div>
-  </div>
-
-  <div class="survey-wrapper">
-    <div id="questionContainer"></div>
-    <div class="btn-row">
-      <button class="btn-secondary" id="prevBtn" type="button" disabled>السابق</button>
-      <button class="btn-primary" id="nextBtn" type="button">التالي</button>
-      <button class="btn-primary hidden" id="submitBtn" type="button">تحليل الأمان</button>
-    </div>
-
-    <div id="resultDashboard" class="result-dashboard hidden">
-      <div style="text-align:center; margin-bottom:25px;">
-        <svg width="60" height="70" viewBox="0 0 44 50" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="22,2 40,12 40,38 22,48 4,38 4,12" fill="none" stroke="#7b2fff" stroke-width="1.5"/>
-          <polygon points="22,8 35,16 35,34 22,42 9,34 9,16" fill="rgba(123,47,255,0.1)" stroke="#9b4fff" stroke-width="1"/>
-          <circle cx="22" cy="25" r="4" fill="#7b2fff" opacity="0.8"/>
-        </svg>
-        <div style="font-family:'Orbitron'; font-size:12px; letter-spacing:3px; color:#7b2fff; margin-top:10px;">OBSIDIAN AEGIS</div>
-      </div>
-      <div class="score-circle-container">
-        <div class="big-score" id="finalScore">--</div>
-        <div class="score-label" id="scoreLabel"></div>
-      </div>
-      <div class="analysis-block">
-        <div class="analysis-column">
-          <h4>✅ نقاط القوة</h4>
-          <ul id="strengthsList"></ul>
+<div class="page">
+    <header class="hdr">
+        <div class="hbrand">
+            <svg class="hshield" viewBox="0 0 80 92" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 2 L75 18 L75 62 L40 90 L5 62 L5 18 Z" fill="rgba(5,5,13,.9)" stroke="rgba(155,79,255,.7)" stroke-width="1.2"/>
+                <path d="M40 2 L5 18 L5 62 L40 50 Z" fill="rgba(123,47,255,.08)"/>
+                <path d="M40 2 L75 18 L75 62 L40 50 Z" fill="rgba(123,47,255,.12)"/>
+                <path d="M40 50 L5 62 L40 90 L75 62 Z" fill="rgba(123,47,255,.06)"/>
+                <path d="M40 12 L68 26 L68 60 L40 82 L12 60 L12 26 Z" fill="none" stroke="rgba(123,47,255,.4)" stroke-width=".8"/>
+                <path d="M40 4 L44 35 L40 88 L36 35 Z" fill="rgba(123,47,255,.35)"/>
+                <line x1="40" y1="4" x2="40" y2="88" stroke="#9b4fff" stroke-width=".7" opacity=".8"/>
+                <circle cx="40" cy="42" r="8" fill="rgba(123,47,255,.12)" stroke="#7b2fff" stroke-width="1"/>
+                <circle cx="40" cy="42" r="4" fill="rgba(123,47,255,.25)" stroke="#c084fc" stroke-width=".8"/>
+                <circle cx="40" cy="42" r="1.8" fill="#c084fc"/>
+                <path d="M40 2 L75 18 L75 62 L40 90 L5 62 L5 18 Z" fill="none" stroke="#9b4fff" stroke-width=".6" opacity=".5">
+                    <animate attributeName="opacity" values=".3;.8;.3" dur="2.5s" repeatCount="indefinite"/>
+                </path>
+            </svg>
+            <div class="hbt"><div class="hn">OBSIDIAN AEGIS</div><div class="htg">SECURE · DEFEND · DOMINATE</div></div>
         </div>
-        <div class="analysis-column">
-          <h4>⚠️ أولويات عاجلة</h4>
-          <ul id="weaknessesList"></ul>
+        <div class="hst">
+            <div class="sp"><div class="sd li"></div>PROTECTED</div>
+            <div class="sp"><div class="sd pr"></div>AES-256</div>
+            <div class="sp">ZERO TRUST</div>
         </div>
-      </div>
-      <div class="recommendation-box" id="recommendation"></div>
-      <div class="action-buttons">
-        <button class="btn-primary" onclick="downloadPDF()">📥 تنزيل التقرير PDF</button>
-        <div class="email-send-group">
-          <input type="email" id="clientEmail" class="field-input" placeholder="بريدك الإلكتروني">
-          <button class="btn-primary" onclick="sendReport()">📤 أرسل التقرير إلى بريدي</button>
-        </div>
-        <button class="btn-secondary" onclick="restartSurvey()">إعادة الاختبار</button>
-      </div>
-      <div class="completion-id" id="surveyRef">REF: OA-2024-XXXXXX</div>
-    </div>
-  </div>
+    </header>
 
-  <footer class="site-footer">
-    <div class="footer-brand">OBSIDIAN AEGIS SENTINEL™ — ASSESSMENT PLATFORM V2.0</div>
-    <div class="footer-secure">
-      <svg viewBox="0 0 16 20"><path d="M8 1L1 5v6c0 4.4 3 8.5 7 9.5C12 19.5 15 15.4 15 11V5L8 1z"/></svg>
-      مشفر بـ AES-256 · لا تُجمع بيانات شخصية بدون إذن
+    <section class="hero">
+        <div class="hew">
+            <div class="hor hor2"></div>
+            <div class="hor hor1"></div>
+            <svg class="hem" viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="108" r="85" fill="none" stroke="rgba(123,47,255,.08)" stroke-width="1"/>
+                <path d="M100 5 L186 46 L186 140 L100 225 L14 140 L14 46 Z" fill="rgba(5,5,13,.92)" stroke="#9b4fff" stroke-width="1.5"/>
+                <path d="M100 5 L14 46 L14 140 L100 108 Z" fill="rgba(123,47,255,.07)"/>
+                <path d="M100 5 L186 46 L186 140 L100 108 Z" fill="rgba(123,47,255,.11)"/>
+                <path d="M100 108 L14 140 L100 225 L186 140 Z" fill="rgba(123,47,255,.05)"/>
+                <path d="M100 18 L172 55 L172 138 L100 212 L28 138 L28 55 Z" fill="none" stroke="rgba(123,47,255,.4)" stroke-width="1"/>
+                <path d="M100 32 L158 64 L158 136 L100 198 L42 136 L42 64 Z" fill="none" stroke="rgba(123,47,255,.22)" stroke-width=".8"/>
+                <path d="M100 5 L186 46 M100 5 L14 46" stroke="rgba(155,79,255,.35)" stroke-width=".7"/>
+                <path d="M100 5 L106 75 L100 215 L94 75 Z" fill="rgba(123,47,255,.45)"/>
+                <line x1="100" y1="5" x2="100" y2="225" stroke="#b97dff" stroke-width="1.2" opacity=".9"/>
+                <path d="M42 100 L80 85 L100 90 L120 85 L158 100" fill="none" stroke="rgba(123,47,255,.4)" stroke-width="1"/>
+                <path d="M42 120 L80 135 L100 130 L120 135 L158 120" fill="none" stroke="rgba(123,47,255,.4)" stroke-width="1"/>
+                <circle cx="80" cy="85" r="2.5" fill="rgba(123,47,255,.6)"/>
+                <circle cx="120" cy="85" r="2.5" fill="rgba(123,47,255,.6)"/>
+                <circle cx="80" cy="135" r="2.5" fill="rgba(123,47,255,.6)"/>
+                <circle cx="120" cy="135" r="2.5" fill="rgba(123,47,255,.6)"/>
+                <path d="M100 92 L116 110 L100 128 L84 110 Z" fill="rgba(123,47,255,.2)" stroke="#9b4fff" stroke-width="1"/>
+                <circle cx="100" cy="110" r="12" fill="rgba(123,47,255,.15)" stroke="#7b2fff" stroke-width="1.2"/>
+                <circle cx="100" cy="110" r="7" fill="rgba(123,47,255,.3)" stroke="#c084fc" stroke-width="1"/>
+                <circle cx="100" cy="110" r="3" fill="#c084fc"/>
+                <circle cx="100" cy="110" r="18" fill="none" stroke="rgba(123,47,255,.5)" stroke-width=".8">
+                    <animate attributeName="r" values="14;22;14" dur="2.5s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values=".7;.1;.7" dur="2.5s" repeatCount="indefinite"/>
+                </circle>
+                <path d="M14 46 L22 46 M14 46 L14 54" stroke="#9b4fff" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M186 46 L178 46 M186 46 L186 54" stroke="#9b4fff" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M14 140 L22 140 M14 140 L14 132" stroke="#9b4fff" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M186 140 L178 140 M186 140 L186 132" stroke="#9b4fff" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M100 5 L186 46 L186 140 L100 225 L14 140 L14 46 Z" fill="none" stroke="#9b4fff" stroke-width=".8" opacity=".6">
+                    <animate attributeName="opacity" values=".3;.9;.3" dur="3s" repeatCount="indefinite"/>
+                    <animate attributeName="stroke-width" values=".6;1.6;.6" dur="3s" repeatCount="indefinite"/>
+                </path>
+            </svg>
+        </div>
+        <div class="hey">تقييم سريع للحماية الشخصية</div>
+        <h1 class="hh1">اعرف <span class="ac">درجة حمايتك</span> الرقمية</h1>
+        <p class="hsb">ستة أسئلة فقط تفصل بينك وبين تقرير كامل عن نقاط قوتك وضعفك. دقيقتان من وقتك قد تحمي بياناتك للأبد.</p>
+    </section>
+
+    <div class="pw" id="progressContainer">
+        <div class="pt">
+            <span class="pl">تقدّمك في التقييم</span>
+            <span class="pn" id="progressCount">0 / 6</span>
+        </div>
+        <div class="pr"><div class="pf" id="progressFill"></div></div>
+        <div class="ps" id="progressSteps"></div>
     </div>
-  </footer>
+
+    <div class="sw">
+        <div id="questionContainer"></div>
+        <div class="br" id="navButtons">
+            <button class="bs" id="prevBtn" type="button" disabled>السابق</button>
+            <button class="bp" id="nextBtn" type="button">التالي</button>
+            <button class="bp hidden" id="submitBtn" type="button">تحليل الأمان</button>
+        </div>
+
+        <div id="resultDashboard" class="result-dashboard hidden">
+            <div style="text-align:center; margin-bottom:25px;">
+                <svg width="60" height="70" viewBox="0 0 44 50" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="22,2 40,12 40,38 22,48 4,38 4,12" fill="none" stroke="#7b2fff" stroke-width="1.5"/>
+                    <polygon points="22,8 35,16 35,34 22,42 9,34 9,16" fill="rgba(123,47,255,0.1)" stroke="#9b4fff" stroke-width="1"/>
+                    <circle cx="22" cy="25" r="4" fill="#7b2fff" opacity="0.8"/>
+                </svg>
+                <div style="font-family:'Orbitron'; font-size:12px; letter-spacing:3px; color:#7b2fff; margin-top:10px;">OBSIDIAN AEGIS</div>
+            </div>
+            <div class="score-circle-container">
+                <div class="big-score" id="finalScore">--</div>
+                <div class="score-label" id="scoreLabel"></div>
+            </div>
+            <p style="color:var(--gm); margin:10px 0;" id="scoreInterpretation"></p>
+
+            <div class="analysis-block">
+                <div class="analysis-column">
+                    <h4>✅ نقاط القوة</h4>
+                    <ul id="strengthsList"></ul>
+                </div>
+                <div class="analysis-column">
+                    <h4>⚠️ أولويات عاجلة</h4>
+                    <ul id="weaknessesList"></ul>
+                </div>
+            </div>
+
+            <div class="recommendation-box" id="recommendation"></div>
+
+            <div style="text-align:right; margin:20px 0;">
+                <h4 style="color:var(--w); margin-bottom:15px;">📋 بياناتك لاستلام التقرير</h4>
+                <input type="text" id="clientName" class="field-input" placeholder="الاسم الكامل">
+                <input type="email" id="clientEmail" class="field-input" placeholder="البريد الإلكتروني">
+            </div>
+
+            <div class="action-buttons">
+                <button class="bp" onclick="downloadPDF()">📥 تنزيل التقرير PDF</button>
+                <button class="bp" onclick="sendReport()">📤 أرسل التقرير إلى بريدي</button>
+                <button class="bs" onclick="restartSurvey()">إعادة الاختبار</button>
+            </div>
+            <div class="completion-id" id="surveyRef">REF: OA-2025-XXXXXX</div>
+        </div>
+    </div>
+
+    <footer class="ftr">
+        <div class="fb">OBSIDIAN AEGIS SENTINEL™ — ASSESSMENT PLATFORM V3.0</div>
+        <div class="fs"><svg viewBox="0 0 16 20"><path d="M8 1L1 5v6c0 4.4 3 8.5 7 9.5C12 19.5 15 15.4 15 11V5L8 1z"/></svg>مُشفَّر بـ AES-256 · لا تُجمع بيانات شخصية بدون إذن</div>
+    </footer>
 </div>
 
 <script>
 const questions = [
     { text: 'أي وصف أقرب لطريقتك في التعامل مع كلمات المرور؟', category: 'إدارة الهوية والوصول', options: [
-        { text: 'أستخدم برنامجًا خاصًا لحفظ كلمات المرور وتوليد كلمات قوية تلقائيًا.', score: 100, strength: 'كلمات مرور قوية', action: 'استمر في استخدام مدير كلمات المرور.' },
-        { text: 'أحرص أن تكون كلمة المرور مختلفة لكل حساب مهم.', score: 60, strength: 'تنوع كلمات المرور', action: 'جرب مدير كلمات مرور مثل Bitwarden.' },
-        { text: 'أستخدم كلمات مختلفة لكن سهلة التذكر.', score: 30, strength: null, action: 'ثبّت مدير كلمات مرور ودعه يولد كلمات قوية.' },
-        { text: 'للأسف، أستخدم نفس كلمة المرور في أكثر من مكان.', score: 0, strength: null, action: 'ابدأ فوراً بتغيير كلمة مرور بريدك الإلكتروني.' }
+        { text: 'أستخدم برنامجًا خاصًا لحفظ كلمات المرور وتوليد كلمات قوية تلقائيًا.', score: 100, strength: 'كلمات مرور قوية', action: 'استمر في استخدام مدير كلمات المرور. أنت في المسار الصحيح.' },
+        { text: 'أحرص أن تكون كلمة المرور مختلفة لكل حساب مهم.', score: 60, strength: 'تنوع كلمات المرور', action: 'جرب مدير كلمات مرور مثل Bitwarden، سيوفر عليك عناء التذكر ويزيد قوتها.' },
+        { text: 'أستخدم كلمات مختلفة لكن سهلة التذكر.', score: 30, strength: null, action: 'ثبّت مدير كلمات مرور ودعه يولد كلمات قوية بدلاً من الاعتماد على ذاكرتك.' },
+        { text: 'للأسف، أستخدم نفس كلمة المرور في أكثر من مكان.', score: 0, strength: null, action: 'لا تقلق، هذه أكثر نقطة نراها. ابدأ فوراً بتغيير كلمة مرور بريدك الإلكتروني أولاً.' }
     ]},
     { text: 'هل قمت بتفعيل المصادقة الثنائية (2FA) على حساباتك المهمة؟', category: 'المصادقة الثنائية', options: [
-        { text: 'نعم، جميع الحسابات المهمة.', score: 100, strength: 'مصادقة ثنائية شاملة', action: 'استمر في مراجعة إعدادات الأمان كل فترة.' },
-        { text: 'بعضها، مثل البريد والبنوك فقط.', score: 60, strength: 'مصادقة ثنائية جزئية', action: 'فعّل المصادقة الثنائية على حسابات التواصل الاجتماعي.' },
-        { text: 'حساب واحد فقط.', score: 30, strength: null, action: 'ابدأ بتفعيلها على بريدك الإلكتروني.' },
-        { text: 'لم أقم بتفعيلها بعد.', score: 0, strength: null, action: 'أعلم أن الخطوة قد تبدو مزعجة، لكنها الأهم. ابدأ اليوم.' }
+        { text: 'نعم، جميع الحسابات المهمة (بريد، بنوك، تواصل اجتماعي).', score: 100, strength: 'مصادقة ثنائية شاملة', action: 'ممتاز! استمر في مراجعة إعدادات الأمان كل فترة.' },
+        { text: 'بعضها، مثل البريد والبنوك فقط.', score: 60, strength: 'مصادقة ثنائية جزئية', action: 'فعّل المصادقة الثنائية على حسابات التواصل الاجتماعي أيضاً.' },
+        { text: 'حساب واحد فقط.', score: 30, strength: null, action: 'ابدأ بتفعيلها على بريدك الإلكتروني، فهو مفتاح استرداد كل حساباتك.' },
+        { text: 'لم أقم بتفعيلها بعد.', score: 0, strength: null, action: 'أعلم أن الخطوة قد تبدو مزعجة، لكنها أهم ما ستفعله اليوم. ابدأ ببريد Gmail أو Outlook.' }
     ]},
     { text: 'كيف تتصل بالإنترنت عندما تتعامل مع معلومات حساسة؟', category: 'أمان الشبكات', options: [
-        { text: 'أعتمد على شبكتي المنزلية المؤمنة، وأستخدم VPN عند الحاجة.', score: 100, strength: 'اتصال شبكي آمن', action: 'استمر في تجنب الشبكات العامة.' },
-        { text: 'أستخدم شبكتي المنزلية فقط، لكن بدون VPN.', score: 60, strength: 'شبكة منزلية موثوقة', action: 'فكر في استخدام VPN عند السفر.' },
-        { text: 'أستخدم WiFi عامة لكن أتجنب المعاملات الحساسة.', score: 30, strength: null, action: 'فعّل VPN على جوالك ليكون تلقائياً.' },
-        { text: 'أستخدم أي شبكة متاحة، حتى للبنوك.', score: 0, strength: null, action: 'توقف فوراً عن استخدام الشبكات العامة للمعاملات الحساسة.' }
+        { text: 'أعتمد على شبكتي المنزلية المؤمنة، وأستخدم VPN عند الحاجة.', score: 100, strength: 'اتصال شبكي آمن', action: 'استمر في تجنب الشبكات العامة للمعاملات الحساسة.' },
+        { text: 'أستخدم شبكتي المنزلية فقط، لكن بدون VPN.', score: 60, strength: 'شبكة منزلية موثوقة', action: 'فكر في استخدام VPN عند السفر أو العمل من أماكن عامة.' },
+        { text: 'أستخدم WiFi عامة لكن أتجنب المعاملات الحساسة.', score: 30, strength: null, action: 'فعّل VPN على جوالك ليكون تلقائياً عند الاتصال بشبكات عامة.' },
+        { text: 'أستخدم أي شبكة متاحة، حتى للبنوك.', score: 0, strength: null, action: 'توقف عن استخدام الشبكات العامة للمعاملات الحساسة فوراً. استخدم بيانات الجوال أو VPN.' }
     ]},
     { text: 'ما مستوى الحماية على جهازك الأساسي (جوال/حاسوب)؟', category: 'أمان الأجهزة', options: [
-        { text: 'الجهاز محدث تلقائياً وعليه برنامج حماية متقدم.', score: 100, strength: 'جهاز محمي بالكامل', action: 'استمر في الحفاظ على التحديثات.' },
-        { text: 'الجهاز محدث وجدار الحماية مفعل.', score: 60, strength: 'تحديثات منتظمة', action: 'ثبّت برنامج حماية موثوقاً.' },
-        { text: 'الجهاز محدث لكن لا يوجد برنامج حماية.', score: 30, strength: null, action: 'ثبّت برنامج حماية فوراً.' },
-        { text: 'لا أعرف آخر مرة حدثت فيها الجهاز.', score: 0, strength: null, action: 'حدّث جهازك فوراً. فعّل التحديثات التلقائية.' }
+        { text: 'الجهاز محدث تلقائياً وعليه برنامج حماية متقدم.', score: 100, strength: 'جهاز محمي بالكامل', action: 'استمر في الحفاظ على التحديثات التلقائية.' },
+        { text: 'الجهاز محدث وجدار الحماية مفعل.', score: 60, strength: 'تحديثات منتظمة', action: 'ثبّت برنامج حماية موثوقاً، فالجدار الناري وحده لا يكفي.' },
+        { text: 'الجهاز محدث لكن لا يوجد برنامج حماية.', score: 30, strength: null, action: 'ثبّت برنامج حماية فوراً. الجدار الناري وحده لا يكفي.' },
+        { text: 'لا أعرف آخر مرة حدثت فيها الجهاز.', score: 0, strength: null, action: 'حدّث جهازك فوراً. فعّل التحديثات التلقائية، ثم افحصه.' }
     ]},
     { text: 'كيف تحافظ على نسخة احتياطية من بياناتك المهمة؟', category: 'النسخ الاحتياطي', options: [
-        { text: '3 نسخ، على وسيطين مختلفين، ونسخة خارج الموقع.', score: 100, strength: 'نسخ احتياطي ممتاز', action: 'أنت تتبع أفضل الممارسات. اختبر الاستعادة دورياً.' },
-        { text: 'نسخة سحابية تلقائية ونسخة يدوية على هاردسك.', score: 60, strength: 'نسخ احتياطي جيد', action: 'أضف نسخة ثالثة خارج الموقع.' },
-        { text: 'نسخة سحابية فقط.', score: 30, strength: null, action: 'احتفظ بنسخة على هاردسك خارجي أيضاً.' },
-        { text: 'لا أملك أي نسخة احتياطية.', score: 0, strength: null, action: 'أنشئ نسخة احتياطية اليوم.' }
+        { text: '3 نسخ، على وسيطين مختلفين، ونسخة خارج الموقع.', score: 100, strength: 'نسخ احتياطي ممتاز', action: 'أنت تتبع أفضل الممارسات. اختبر استعادة الملفات دورياً.' },
+        { text: 'نسخة سحابية تلقائية ونسخة يدوية على هاردسك.', score: 60, strength: 'نسخ احتياطي جيد', action: 'أضف نسخة ثالثة خارج الموقع أو في خدمة سحابية مختلفة.' },
+        { text: 'نسخة سحابية فقط.', score: 30, strength: null, action: 'احتفظ بنسخة على هاردسك خارجي أيضاً. السحابة وحدها ليست كافية.' },
+        { text: 'لا أملك أي نسخة احتياطية.', score: 0, strength: null, action: 'أنشئ نسخة احتياطية اليوم. استخدم Google Drive أو iCloud مع هاردسك خارجي.' }
     ]},
     { text: 'كيف تتعامل مع رسالة غير متوقعة تطلب تحديث بياناتك؟', category: 'الوعي الأمني', options: [
-        { text: 'أتجاهلها وأتحقق من الموقع الرسمي للجهة.', score: 100, strength: 'وعي أمني ممتاز', action: 'أنت نموذج يحتذى به.' },
-        { text: 'لا أضغط الرابط، لكني قد أرد على المرسل.', score: 60, strength: 'حذر جيد', action: 'لا ترد على المرسل.' },
-        { text: 'أضغط الرابط إذا بدا رسمياً.', score: 30, strength: null, action: 'لا تضغط أي رابط. اكتب عنوان الموقع بنفسك.' },
-        { text: 'أضغط الرابط فوراً، قد يكون شيئاً مهماً.', score: 0, strength: null, action: 'توقف فوراً عن فتح الروابط غير المتوقعة.' }
+        { text: 'أتجاهلها وأتحقق من الموقع الرسمي للجهة.', score: 100, strength: 'وعي أمني ممتاز', action: 'أنت نموذج يحتذى به. استمر في هذا السلوك.' },
+        { text: 'لا أضغط الرابط، لكني قد أرد على المرسل.', score: 60, strength: 'حذر جيد', action: 'لا ترد على المرسل. تواصل مع الجهة عبر قنواتها الرسمية فقط.' },
+        { text: 'أضغط الرابط إذا بدا رسمياً.', score: 30, strength: null, action: 'لا تضغط أي رابط. اكتب عنوان الموقع بنفسك أو استخدم التطبيق الرسمي.' },
+        { text: 'أضغط الرابط فوراً، قد يكون شيئاً مهماً.', score: 0, strength: null, action: 'توقف فوراً عن فتح الروابط غير المتوقعة. استخدم حارس إيجيس لفحصها.' }
     ]}
 ];
 
 const threatDescriptions = {
-    'اختراق الحسابات': 'قد يستخدم شخص كلمة مرور مسربة للدخول إلى حساباتك.',
-    'برمجيات خبيثة': 'قد يصاب جهازك بفيروس من تحميل ملف مصاب.',
-    'التنصت على البيانات': 'الشبكات العامة قد تسمح باعتراض بياناتك.',
-    'فقدان البيانات': 'بدون نسخ احتياطية، قد تفقد كل شيء فجأة.',
-    'التصيد الاحتيالي': 'قد تصلك رسالة تبدو رسمية وتدفعك لإدخال بياناتك في موقع مزيف.'
+    'اختراق الحسابات': 'قد يستخدم شخص كلمة مرور مسربة من موقع آخر للدخول إلى حساباتك. الحل: كلمات مرور فريدة ومصادقة ثنائية.',
+    'برمجيات خبيثة': 'قد يصاب جهازك بفيروس من تحميل ملف مصاب أو تحديث وهمي. الحل: برنامج حماية موثوق وتحديثات دورية.',
+    'التنصت على البيانات': 'الشبكات العامة قد تسمح باعتراض بياناتك. الحل: تجنب الشبكات العامة أو استخدم VPN.',
+    'فقدان البيانات': 'بدون نسخ احتياطية، قد تفقد كل شيء فجأة. الحل: أنشئ نسخة احتياطية اليوم.',
+    'التصيد الاحتيالي': 'قد تصلك رسالة تبدو رسمية وتدفعك لإدخال بياناتك في موقع مزيف. الحل: لا تضغط على الروابط.'
 };
 
 let currentQuestionIndex = 0;
@@ -295,28 +393,30 @@ const progressFill = document.getElementById('progressFill');
 const progressCount = document.getElementById('progressCount');
 const progressSteps = document.getElementById('progressSteps');
 const resultDashboard = document.getElementById('resultDashboard');
+const navButtons = document.getElementById('navButtons');
+const progressContainer = document.getElementById('progressContainer');
 
 function buildProgressSteps() {
     progressSteps.innerHTML = '';
     questions.forEach((_, i) => {
         const dot = document.createElement('div');
-        dot.className = 'step-dot';
-        dot.innerHTML = `<div class="step-circle" id="stepCircle${i}">${String(i+1).padStart(2,'0')}</div><div class="step-name">${questions[i].category}</div>`;
+        dot.className = 'sn';
+        dot.innerHTML = `<div class="sr" id="stepCircle${i}">${String(i+1).padStart(2,'0')}</div><div class="sl">${questions[i].category}</div>`;
         progressSteps.appendChild(dot);
     });
 }
 
 function updateProgress() {
-    const pct = ((currentQuestionIndex) / questions.length) * 100;
+    const pct = (currentQuestionIndex / questions.length) * 100;
     progressFill.style.width = pct + '%';
     progressCount.textContent = currentQuestionIndex + ' / ' + questions.length;
     for (let i = 0; i < questions.length; i++) {
         const c = document.getElementById('stepCircle' + i);
-        const d = c.closest('.step-dot');
+        const n = c.closest('.sn');
         c.classList.remove('active', 'done');
-        d.classList.remove('active', 'done');
-        if (i < currentQuestionIndex) { c.classList.add('done'); d.classList.add('done'); c.textContent = '✓'; }
-        else if (i === currentQuestionIndex) { c.classList.add('active'); d.classList.add('active'); }
+        n.classList.remove('active', 'done');
+        if (i < currentQuestionIndex) { c.classList.add('done'); n.classList.add('done'); c.textContent = '✓'; }
+        else if (i === currentQuestionIndex) { c.classList.add('active'); n.classList.add('active'); }
     }
 }
 
@@ -331,11 +431,11 @@ function updateNavigation() {
 
 function renderQuestion(index) {
     const q = questions[index];
-    let html = `<div class="question-card"><div class="q-number">السؤال ${index+1}</div><div class="q-text">${q.text}</div><div class="options">`;
+    let html = `<div class="qc"><div class="qnr">السؤال ${index+1}</div><div class="qt">${q.text}</div><div class="oc">`;
     q.options.forEach((opt, optIndex) => {
-        html += `<div class="option-item${selectedAnswers[index] === optIndex ? ' selected' : ''}" onclick="selectOption(${index}, ${optIndex}, this)">
-            <div class="custom-radio"></div>
-            <div><span class="option-label">${opt.text}</span><div class="option-score">${opt.score} نقطة</div></div>
+        html += `<div class="op${selectedAnswers[index] === optIndex ? ' selected' : ''}" onclick="selectOption(${index}, ${optIndex}, this)">
+            <div class="or"></div>
+            <div><span class="ol">${opt.text}</span><div class="option-score">${opt.score} نقطة</div></div>
         </div>`;
     });
     html += '</div></div>';
@@ -346,7 +446,7 @@ function renderQuestion(index) {
 
 function selectOption(qIndex, optIndex, element) {
     selectedAnswers[qIndex] = optIndex;
-    const allOptions = element.parentElement.querySelectorAll('.option-item');
+    const allOptions = element.parentElement.querySelectorAll('.op');
     allOptions.forEach(opt => opt.classList.remove('selected'));
     element.classList.add('selected');
     updateNavigation();
@@ -356,6 +456,7 @@ function nextQuestion() {
     if (currentQuestionIndex < questions.length - 1) {
         currentQuestionIndex++;
         renderQuestion(currentQuestionIndex);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
@@ -363,6 +464,7 @@ function prevQuestion() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
         renderQuestion(currentQuestionIndex);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
@@ -382,20 +484,13 @@ function submitSurvey() {
     const ref = 'OA-' + new Date().getFullYear() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
     document.getElementById('surveyRef').textContent = 'REF: ' + ref;
 
-    // تحليل النتائج
     const strengths = [], weaknesses = [];
-    questions.forEach((q, i) => {
-        const answer = q.options[selectedAnswers[i]];
-        if (answer.score >= 80 && answer.strength) strengths.push(answer.strength);
-        else if (answer.score <= 30) weaknesses.push(q.category);
-    });
     const threat = weaknesses.length > 0 ? (weaknesses[0] === 'إدارة الهوية والوصول' || weaknesses[0] === 'المصادقة الثنائية' ? 'اختراق الحسابات' : weaknesses[0] === 'أمان الشبكات' ? 'التنصت على البيانات' : weaknesses[0] === 'أمان الأجهزة' ? 'برمجيات خبيثة' : weaknesses[0] === 'النسخ الاحتياطي' ? 'فقدان البيانات' : 'التصيد الاحتيالي') : 'لا توجد تهديدات واضحة';
     const recommendation = score >= 80 ? 'حصن منيع. استمر في مراجعة إعداداتك دورياً.' : score >= 50 ? 'تحت المراقبة. عالج الأولويات العاجلة لتحسين وضعك.' : 'مكشوف رقمياً. ابدأ فوراً ببناء أساسيات الحماية.';
 
-    // عرض النتيجة
-    document.getElementById('progressContainer').classList.add('hidden');
+    progressContainer.classList.add('hidden');
     questionContainer.classList.add('hidden');
-    document.querySelector('.btn-row').classList.add('hidden');
+    navButtons.classList.add('hidden');
     resultDashboard.classList.remove('hidden');
 
     document.getElementById('finalScore').textContent = score + '/100';
@@ -403,12 +498,14 @@ function submitSurvey() {
     document.getElementById('finalScore').style.color = color;
     document.getElementById('scoreLabel').textContent = score >= 80 ? 'حصن منيع' : score >= 50 ? 'تحت المراقبة' : 'مكشوف رقمياً';
     document.getElementById('scoreLabel').style.color = color;
+    document.getElementById('scoreInterpretation').textContent = score >= 80 ? 'أنت تطبق معظم الممارسات الأساسية. استمر في المراجعة الدورية.' : score >= 50 ? 'لديك أساس جيد، لكن هناك ثغرات تحتاج إلى معالجة.' : 'وضعك الحالي يحتاج إلى إجراءات فورية. لا تقلق، كل نقطة ضعف هنا يمكن معالجتها.';
 
     document.getElementById('strengthsList').innerHTML = strengths.length ? strengths.map(s => `<li>${s}</li>`).join('') : '<li>لا توجد نقاط قوة بارزة.</li>';
     document.getElementById('weaknessesList').innerHTML = weaknesses.length ? weaknesses.map(w => `<li>${w}</li>`).join('') : '<li>لا توجد نقاط ضعف حرجة.</li>';
     document.getElementById('recommendation').innerHTML = `<strong>🎯 توصيتنا:</strong> ${recommendation}`;
 
     window._surveyResult = { score, strengths, weaknesses, recommendation, threat };
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function downloadPDF() {
@@ -460,19 +557,23 @@ function downloadPDF() {
 }
 
 function sendReport() {
-    const email = document.getElementById('clientEmail').value;
-    if (!email) { alert('يرجى إدخال بريدك الإلكتروني أولاً.'); return; }
-    alert('شكراً! سيتم إرسال التقرير إلى بريدك الإلكتروني بعد تفعيل الخدمة قريباً. يمكنك الآن تنزيل التقرير PDF.');
+    const name = document.getElementById('clientName').value.trim();
+    const email = document.getElementById('clientEmail').value.trim();
+    if (!name || !email) { alert('يرجى إدخال اسمك وبريدك الإلكتروني أولاً.'); return; }
+    alert(`شكراً ${name}! سيتم إرسال التقرير إلى ${email} بعد تفعيل الخدمة قريباً.\nيمكنك الآن تنزيل التقرير PDF.`);
 }
 
 function restartSurvey() {
     currentQuestionIndex = 0;
     selectedAnswers = {};
     resultDashboard.classList.add('hidden');
-    document.getElementById('progressContainer').classList.remove('hidden');
+    progressContainer.classList.remove('hidden');
     questionContainer.classList.remove('hidden');
-    document.querySelector('.btn-row').classList.remove('hidden');
+    navButtons.classList.remove('hidden');
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientEmail').value = '';
     renderQuestion(0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 prevBtn.addEventListener('click', prevQuestion);
