@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Arabic:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --ob:#04040c; --dp:#07071a; --sa:#0b0b1f; --sb:#0f0f28; --sc:#141435;
@@ -506,53 +509,219 @@ function submitSurvey() {
     document.getElementById('recommendation').innerHTML = `<strong>🎯 توصيتنا:</strong> ${recommendation}`;
 
     window._surveyResult = { score, strengths, weaknesses, recommendation, threat };
+    window._clientName = document.getElementById('clientName')?.value?.trim() || 'عميل Obsidian';
+    window._reportDate = new Date().toLocaleDateString('ar-SA');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 function downloadPDF() {
     const { jsPDF } = window.jspdf;
     const result = window._surveyResult;
     if (!result) return;
 
-    // نلتقط صورة من بطاقة النتيجة التي تظهر للمستخدم
-    html2canvas(document.getElementById('resultDashboard'), {
-        scale: 2, // جودة عالية
-        backgroundColor: '#0b0b1f' // نفس لون الخلفية
-    }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
+    const clientName = window._clientName || 'عميل Obsidian';
+    const reportId = document.getElementById('surveyRef').textContent.replace('REF: ', '');
+    const reportDate = window._reportDate || new Date().toLocaleDateString('ar-SA');
+    const score = result.score;
+    const levelText = score >= 80 ? 'حصن منيع' : score >= 50 ? 'تحت المراقبة' : 'مكشوف رقمياً';
+    const levelColor = score >= 80 ? '#22d3ee' : score >= 50 ? '#fbbf24' : '#f43f5e';
+    const riskLevel = score >= 80 ? 'LOW' : score >= 50 ? 'MEDIUM' : 'HIGH';
+
+    // وصف المخاطر الديناميكي
+    const weaknessesDescriptions = {
+        'إدارة الهوية والوصول': 'إعادة استخدام كلمات المرور أو استخدام كلمات ضعيفة يجعل حساباتك عرضة للاختراق.',
+        'المصادقة الثنائية': 'غياب المصادقة الثنائية يعني أن أي شخص يعرف كلمة مرورك يمكنه الدخول إلى حسابك.',
+        'أمان الشبكات': 'استخدام شبكات غير آمنة يعرض بياناتك للتجسس والسرقة.',
+        'أمان الأجهزة': 'الأجهزة غير المحدثة أو غير المحمية يمكن اختراقها بسهولة.',
+        'النسخ الاحتياطي': 'بدون نسخ احتياطية، قد تفقد بياناتك بشكل دائم.',
+        'الوعي الأمني': 'النقر على روابط مشبوهة قد يؤدي إلى سرقة بياناتك أو جهازك.'
+    };
+
+    const threatDetails = {
+        'اختراق الحسابات': { prob: '75%', impact: 'سرقة البيانات المالية والشخصية', prevention: 'استخدم كلمات مرور قوية وفعّل المصادقة الثنائية.' },
+        'برمجيات خبيثة': { prob: '60%', impact: 'تلف الملفات أو تجسس على الجهاز', prevention: 'ثبّت برنامج حماية وحدث جهازك.' },
+        'التنصت على البيانات': { prob: '55%', impact: 'سرقة كلمات المرور والبيانات', prevention: 'تجنب الشبكات العامة واستخدم VPN.' },
+        'فقدان البيانات': { prob: '80%', impact: 'فقدان مستديم للملفات', prevention: 'أنشئ نسخاً احتياطية.' },
+        'التصيد الاحتيالي': { prob: '72%', impact: 'سرقة الحسابات', prevention: 'لا تفتح روابط مشبوهة.' }
+    };
+
+    // وظيفة مساعدة لإنشاء عنصر HTML والتقاطه
+    async function captureElement(htmlContent) {
+        const div = document.createElement('div');
+        div.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;background:#0b0b1f;color:#f0f0ff;font-family:Tajawal,sans-serif;padding:40px;direction:rtl;';
+        div.innerHTML = htmlContent;
+        document.body.appendChild(div);
+        const canvas = await html2canvas(div, { scale: 2, backgroundColor: '#0b0b1f' });
+        document.body.removeChild(div);
+        return canvas;
+    }
+
+    // بدء إنشاء PDF
+    async function buildPDF() {
         const doc = new jsPDF('p', 'mm', 'a4');
-        
-        // حساب أبعاد الصورة لتناسب صفحة A4
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
-        const imgWidth = pageWidth - 20; // هامش 10 مم من كل جانب
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const margin = 15;
+        const imgWidth = pageWidth - 2 * margin;
 
-        // إذا كانت الصورة أطول من الصفحة، نضبطها
-        let heightLeft = imgHeight;
-        let position = 10; // هامش علوي
+        // ---------- الصفحة 1: الغلاف ----------
+        const coverHTML = `
+            <div style="text-align:center;">
+                <img src="assets/obsidian-aegis-logo.png" style="width:80px;margin-bottom:20px;" />
+                <h1 style="color:#9b4fff;font-size:28px;margin:10px 0;">OBSIDIAN AEGIS</h1>
+                <p style="color:#9090b8;font-size:14px;">Cyber Security • Intelligence • Consulting</p>
+                <hr style="border-color:#7b2fff;margin:20px 0;" />
+                <h2 style="color:#fff;font-size:24px;">Digital Shield Assessment Report</h2>
+                <div style="margin-top:40px;text-align:right;font-size:16px;">
+                    <p><strong>العميل:</strong> ${clientName}</p>
+                    <p><strong>رقم التقرير:</strong> ${reportId}</p>
+                    <p><strong>التاريخ:</strong> ${reportDate}</p>
+                </div>
+                <div style="margin-top:50px;">
+                    <div style="font-size:60px;color:${levelColor};font-weight:bold;">${score}/100</div>
+                    <div style="font-size:24px;color:${levelColor};">${levelText}</div>
+                    <div style="font-size:18px;color:#fff;margin-top:20px;">Risk Level: ${riskLevel}</div>
+                </div>
+            </div>
+        `;
+        const coverCanvas = await captureElement(coverHTML);
+        doc.addImage(coverCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (coverCanvas.height * imgWidth) / coverCanvas.width);
+        
+        // ---------- الصفحة 2: الملخص التنفيذي ----------
+        let executiveSummary;
+        if (score >= 80) executiveSummary = "يشير هذا التقييم إلى أن المستخدم يطبق أغلب الممارسات الأمنية الأساسية، مما يقلل احتمالية التعرض للهجمات الرقمية الشائعة. يُنصح بالاستمرار في المراجعة الدورية وتحديث السياسات الأمنية.";
+        else if (score >= 50) executiveSummary = "يمتلك المستخدم أساساً أمنياً جيداً، إلا أن بعض الثغرات التشغيلية ما زالت تحتاج إلى معالجة لتحسين الوضع الأمني العام وتقليل فرص التعرض للهجمات.";
+        else executiveSummary = "توجد فجوات أمنية واضحة قد تؤدي إلى اختراق الحسابات أو فقدان البيانات إذا لم يتم اتخاذ إجراءات تصحيحية فورية.";
 
-        // إضافة الصورة (الصفحة الأولى)
-        doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        const summaryHTML = `
+            <div>
+                <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">الملخص التنفيذي</h2>
+                <p style="font-size:16px;line-height:1.8;color:#c8c8e8;margin-top:20px;">${executiveSummary}</p>
+                <p style="margin-top:20px;font-size:16px;color:#c8c8e8;">مستوى المخاطر العام: <span style="color:${levelColor};font-weight:bold;">${riskLevel}</span></p>
+                <p style="font-size:16px;color:#c8c8e8;">الدرجة تعني أن وضعك الأمني <span style="color:${levelColor};">${levelText}</span>.</p>
+            </div>
+        `;
+        const summaryCanvas = await captureElement(summaryHTML);
+        doc.addPage();
+        doc.addImage(summaryCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (summaryCanvas.height * imgWidth) / summaryCanvas.width);
 
-        // إذا احتاجت الصورة صفحات إضافية
-        while (heightLeft > 0) {
-            position = heightLeft - imgHeight;
-            doc.addPage();
-            doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+        // ---------- الصفحة 3: نقاط القوة والضعف ----------
+        let strengthsHTML = '';
+        result.strengths.forEach(s => strengthsHTML += `<li style="color:#22d3ee;">${s}</li>`);
+        if (!result.strengths.length) strengthsHTML = '<li style="color:#9090b8;">لا توجد نقاط قوة بارزة</li>';
+
+        let weaknessesHTML = '';
+        result.weaknesses.forEach(w => {
+            const desc = weaknessesDescriptions[w] || '';
+            weaknessesHTML += `<li style="color:#f43f5e;"><strong>${w}</strong><br/><span style="color:#c8c8e8;font-size:14px;">${desc}</span></li>`;
+        });
+        if (!result.weaknesses.length) weaknessesHTML = '<li style="color:#9090b8;">لا توجد نقاط ضعف حرجة</li>';
+
+        const criticalWeakness = result.weaknesses.length > 0 ? result.weaknesses[0] : 'لا يوجد';
+        const criticalDesc = weaknessesDescriptions[criticalWeakness] || '';
+
+        const analysisHTML = `
+            <div>
+                <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">تحليل نقاط القوة والضعف</h2>
+                <h3 style="color:#22d3ee;margin-top:20px;">✅ نقاط القوة</h3>
+                <ul style="font-size:16px;">${strengthsHTML}</ul>
+                <h3 style="color:#f43f5e;margin-top:20px;">⚠️ نقاط الضعف</h3>
+                <ul style="font-size:16px;">${weaknessesHTML}</ul>
+                <h3 style="color:#f43f5e;margin-top:30px;">أخطر نقطة ضعف</h3>
+                <div style="background:#1a1a2e;padding:15px;border-right:4px solid #f43f5e;">
+                    <strong>${criticalWeakness}</strong>
+                    <p style="color:#c8c8e8;">${criticalDesc}</p>
+                </div>
+            </div>
+        `;
+        const analysisCanvas = await captureElement(analysisHTML);
+        doc.addPage();
+        doc.addImage(analysisCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (analysisCanvas.height * imgWidth) / analysisCanvas.width);
+
+        // ---------- الصفحة 4: التهديدات المحتملة ----------
+        const threat = result.threat;
+        const td = threatDetails[threat] || { prob: 'N/A', impact: 'N/A', prevention: 'اتبع الإرشادات الأمنية الأساسية.' };
+        const exposureLevel = 100 - score;
+
+        const threatHTML = `
+            <div>
+                <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">التهديدات المحتملة</h2>
+                <h3 style="color:#fbbf24;margin-top:20px;">التهديد الأكثر احتمالاً: ${threat}</h3>
+                <p style="font-size:16px;"><strong>الاحتمالية:</strong> ${td.prob}</p>
+                <p style="font-size:16px;"><strong>التأثير:</strong> ${td.impact}</p>
+                <p style="font-size:16px;"><strong>الوقاية:</strong> ${td.prevention}</p>
+                <div style="margin-top:30px;">
+                    <p style="font-size:16px;">مستوى التعرض: <strong style="color:#f43f5e;">${exposureLevel}%</strong></p>
+                    <div style="background:#2a2a3e;height:20px;border-radius:10px;overflow:hidden;margin-top:10px;">
+                        <div style="width:${exposureLevel}%;height:100%;background:linear-gradient(90deg,#f43f5e,#fbbf24);"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        const threatCanvas = await captureElement(threatHTML);
+        doc.addPage();
+        doc.addImage(threatCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (threatCanvas.height * imgWidth) / threatCanvas.width);
+
+        // ---------- الصفحة 5: خطة التحسين ----------
+        let planHTML = '';
+        let planNumber = 1;
+        questions.forEach((q, index) => {
+            const answer = q.options[selectedAnswers[index]];
+            if (answer.score < 100 && planNumber <= 6) {
+                const priority = answer.score <= 30 ? 'عاجل' : answer.score <= 60 ? 'متوسط' : 'منخفض';
+                const priorityColor = answer.score <= 30 ? '#f43f5e' : answer.score <= 60 ? '#fbbf24' : '#22d3ee';
+                planHTML += `
+                    <div style="margin-bottom:15px;padding:10px;border-right:4px solid ${priorityColor};">
+                        <strong style="color:#fff;">${planNumber}. ${q.category}</strong>
+                        <p style="color:#c8c8e8;">${answer.action}</p>
+                        <span style="color:${priorityColor};">الأولوية: ${priority} | الوقت المتوقع: 15 دقيقة</span>
+                    </div>
+                `;
+                planNumber++;
+            }
+        });
+        const planFullHTML = `<div><h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">خطة التحسين الفورية</h2>${planHTML}</div>`;
+        const planCanvas = await captureElement(planFullHTML);
+        doc.addPage();
+        doc.addImage(planCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (planCanvas.height * imgWidth) / planCanvas.width);
+
+        // ---------- الصفحة 6: ختامية ----------
+        // QR Code
+        const qrContainer = document.createElement('div');
+        qrContainer.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+        document.body.appendChild(qrContainer);
+        new QRCode(qrContainer, { text: 'https://t.me/ObsidianAegisBot', width: 100, height: 100, colorDark: "#7b2fff", colorLight: "#0d0d1c" });
+        const qrCanvas = qrContainer.querySelector('canvas');
+        const qrDataUrl = qrCanvas ? qrCanvas.toDataURL('image/png') : '';
+        document.body.removeChild(qrContainer);
+
+        const footerHTML = `
+            <div style="text-align:center;">
+                <img src="assets/obsidian-aegis-logo.png" style="width:80px;margin-bottom:20px;" />
+                <h2 style="color:#9b4fff;">OBSIDIAN AEGIS</h2>
+                <p style="color:#9090b8;">Cyber Security • Intelligence • Consulting</p>
+                <hr style="border-color:#7b2fff;margin:20px 0;" />
+                <p style="font-size:16px;color:#c8c8e8;">Telegram Bot: @ObsidianAegisBot</p>
+                ${qrDataUrl ? `<img src="${qrDataUrl}" style="margin:20px auto;width:100px;" />` : ''}
+                <p style="font-size:12px;color:#9090b8;margin-top:30px;">هذا التقرير مبني على إجابات المستخدم ولا يعتبر تدقيقاً أمنياً أو اختبار اختراق فعلياً. النتائج لأغراض التوعية والتقييم الأولي فقط.</p>
+            </div>
+        `;
+        const footerCanvas = await captureElement(footerHTML);
+        doc.addPage();
+        doc.addImage(footerCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (footerCanvas.height * imgWidth) / footerCanvas.width);
+
+        // تذييل الصفحات
+        const pageCount = doc.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(6);
+            doc.setTextColor(144, 144, 184);
+            doc.text("OBSIDIAN AEGIS™ | Cyber Security • Intelligence • Consulting", pageWidth / 2, pageHeight - 5, { align: "center" });
         }
 
-        doc.save(`Obsidian_Sentinel_Report_${new Date().toISOString().slice(0,10)}.pdf`);
-    });
-}
+        doc.save(`Obsidian_Assessment_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+    }
 
-function sendReport() {
-    const name = document.getElementById('clientName').value.trim();
-    const email = document.getElementById('clientEmail').value.trim();
-    if (!name || !email) { alert('يرجى إدخال اسمك وبريدك الإلكتروني أولاً.'); return; }
-    alert(`شكراً ${name}! سيتم إرسال التقرير إلى ${email} بعد تفعيل الخدمة قريباً.\nيمكنك الآن تنزيل التقرير PDF.`);
+    buildPDF();
 }
 
 function restartSurvey() {
