@@ -643,6 +643,8 @@ function downloadPDF() {
         `;
         const summaryCanvas = await captureElement(summaryHTML);
         doc.addPage();
+        doc.setFillColor(11, 11, 31);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
         doc.addImage(summaryCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (summaryCanvas.height * imgWidth) / summaryCanvas.width);
 
         // ---------- الصفحة 3: رادار تشارت + نقاط القوة والضعف ----------
