@@ -524,7 +524,27 @@ function downloadPDF() {
     const score = result.score;
     const levelText = score >= 80 ? 'حصن منيع' : score >= 50 ? 'تحت المراقبة' : 'مكشوف رقمياً';
     const levelColor = score >= 80 ? '#22d3ee' : score >= 50 ? '#fbbf24' : '#f43f5e';
+
+    // تصنيف CVSS-like
+    let rating, ratingColor;
+    if (score >= 90) { rating = 'A+'; ratingColor = '#22d3ee'; }
+    else if (score >= 80) { rating = 'A'; ratingColor = '#22d3ee'; }
+    else if (score >= 70) { rating = 'B'; ratingColor = '#22d3ee'; }
+    else if (score >= 50) { rating = 'C'; ratingColor = '#fbbf24'; }
+    else if (score >= 30) { rating = 'D'; ratingColor = '#fbbf24'; }
+    else { rating = 'F'; ratingColor = '#f43f5e'; }
+
     const riskLevel = score >= 80 ? 'LOW' : score >= 50 ? 'MEDIUM' : 'HIGH';
+
+    // ================== حساب درجات المحاور ==================
+    const domainScores = {};
+    questions.forEach((q, index) => {
+        const answer = q.options[selectedAnswers[index]];
+        domainScores[q.category] = answer.score;
+    });
+
+    // ================== الشعار Base64 ==================
+    const logoBase64 = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cG9seWdvbiBwb2ludHM9IjUwLDUgOTUsMzAgOTUsNzAgNTAsOTUgNSw3MCA1LDMwIiBmaWxsPSIjMEIwQjBCIiBzdHJva2U9IiM3QjJGQkUiIHN0cm9rZS13aWR0aD0iMyIvPjxwb2x5Z29uIHBvaW50cz0iNTAsMTUgODUsMzUgODUsNjUgNTAsODUgMTUsNjUgMTUsMzUiIGZpbGw9IiMxMjEyMTIiIHN0cm9rZT0iIzlCNEREQiIgc3Ryb2tlLXdpZHRoPSIyIi8+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iMTIiIGZpbGw9IiM3QjJGQkUiLz48L3N2Zz4=";
 
     // وصف المخاطر الديناميكي
     const weaknessesDescriptions = {
@@ -536,12 +556,13 @@ function downloadPDF() {
         'الوعي الأمني': 'النقر على روابط مشبوهة قد يؤدي إلى سرقة بياناتك أو جهازك.'
     };
 
-    const threatDetails = {
-        'اختراق الحسابات': { prob: '75%', impact: 'سرقة البيانات المالية والشخصية', prevention: 'استخدم كلمات مرور قوية وفعّل المصادقة الثنائية.' },
-        'برمجيات خبيثة': { prob: '60%', impact: 'تلف الملفات أو تجسس على الجهاز', prevention: 'ثبّت برنامج حماية وحدث جهازك.' },
-        'التنصت على البيانات': { prob: '55%', impact: 'سرقة كلمات المرور والبيانات', prevention: 'تجنب الشبكات العامة واستخدم VPN.' },
-        'فقدان البيانات': { prob: '80%', impact: 'فقدان مستديم للملفات', prevention: 'أنشئ نسخاً احتياطية.' },
-        'التصيد الاحتيالي': { prob: '72%', impact: 'سرقة الحسابات', prevention: 'لا تفتح روابط مشبوهة.' }
+    // مصفوفة المخاطر
+    const threatMatrix = {
+        'اختراق الحسابات': { likelihood: 'عالي', impact: 'عالي' },
+        'برمجيات خبيثة': { likelihood: 'متوسط', impact: 'عالي' },
+        'التنصت على البيانات': { likelihood: 'متوسط', impact: 'متوسط' },
+        'فقدان البيانات': { likelihood: 'عالي', impact: 'متوسط' },
+        'التصيد الاحتيالي': { likelihood: 'عالي', impact: 'عالي' }
     };
 
     // وظيفة مساعدة لإنشاء عنصر HTML والتقاطه
@@ -566,45 +587,88 @@ function downloadPDF() {
         // ---------- الصفحة 1: الغلاف ----------
         const coverHTML = `
             <div style="text-align:center;">
-                <img src="assets/obsidian-aegis-logo.png" style="width:80px;margin-bottom:20px;" />
+                <img src="${logoBase64}" style="width:80px;margin-bottom:20px;" />
                 <h1 style="color:#9b4fff;font-size:28px;margin:10px 0;">OBSIDIAN AEGIS</h1>
                 <p style="color:#9090b8;font-size:14px;">Cyber Security • Intelligence • Consulting</p>
                 <hr style="border-color:#7b2fff;margin:20px 0;" />
                 <h2 style="color:#fff;font-size:24px;">Digital Shield Assessment Report</h2>
-                <div style="margin-top:40px;text-align:right;font-size:16px;">
+                <div style="margin-top:30px;text-align:right;font-size:16px;">
                     <p><strong>العميل:</strong> ${clientName}</p>
                     <p><strong>رقم التقرير:</strong> ${reportId}</p>
                     <p><strong>التاريخ:</strong> ${reportDate}</p>
                 </div>
-                <div style="margin-top:50px;">
-                    <div style="font-size:60px;color:${levelColor};font-weight:bold;">${score}/100</div>
-                    <div style="font-size:24px;color:${levelColor};">${levelText}</div>
-                    <div style="font-size:18px;color:#fff;margin-top:20px;">Risk Level: ${riskLevel}</div>
+                <div style="margin-top:40px;">
+                    <div style="font-size:64px;color:${levelColor};font-weight:bold;">${score}/100</div>
+                    <div style="font-size:28px;color:${levelColor};">${levelText}</div>
+                    <div style="font-size:20px;color:#fff;margin-top:15px;">Overall Security Rating: <span style="color:${ratingColor};font-weight:bold;font-size:24px;">${rating}</span></div>
+                    <div style="font-size:16px;color:#9090b8;margin-top:10px;">Risk Level: ${riskLevel}</div>
                 </div>
             </div>
         `;
         const coverCanvas = await captureElement(coverHTML);
         doc.addImage(coverCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (coverCanvas.height * imgWidth) / coverCanvas.width);
-        
+
         // ---------- الصفحة 2: الملخص التنفيذي ----------
         let executiveSummary;
-        if (score >= 80) executiveSummary = "يشير هذا التقييم إلى أن المستخدم يطبق أغلب الممارسات الأمنية الأساسية، مما يقلل احتمالية التعرض للهجمات الرقمية الشائعة. يُنصح بالاستمرار في المراجعة الدورية وتحديث السياسات الأمنية.";
-        else if (score >= 50) executiveSummary = "يمتلك المستخدم أساساً أمنياً جيداً، إلا أن بعض الثغرات التشغيلية ما زالت تحتاج إلى معالجة لتحسين الوضع الأمني العام وتقليل فرص التعرض للهجمات.";
-        else executiveSummary = "توجد فجوات أمنية واضحة قد تؤدي إلى اختراق الحسابات أو فقدان البيانات إذا لم يتم اتخاذ إجراءات تصحيحية فورية.";
+        if (score >= 80) executiveSummary = "تم تقييم الوضع الأمني الحالي بناءً على ستة مجالات رئيسية. أظهرت النتائج تطبيقاً جيداً لأغلب الممارسات الأمنية الأساسية مما يقلل احتمالية التعرض للهجمات الرقمية الشائعة. يُنصح بالاستمرار في المراجعة الدورية للحفاظ على هذا المستوى.";
+        else if (score >= 50) executiveSummary = "تم تقييم الوضع الأمني الحالي بناءً على ستة مجالات رئيسية. أظهرت النتائج وجود ضوابط أمنية جيدة مع الحاجة إلى تحسينات في بعض المجالات لخفض المخاطر التشغيلية. يُوصى بمعالجة نقاط الضعف المحددة لتحسين الوضع الأمني العام.";
+        else executiveSummary = "تم تقييم الوضع الأمني الحالي بناءً على ستة مجالات رئيسية. أظهرت النتائج وجود فجوات أمنية واضحة قد تؤدي إلى اختراق الحسابات أو فقدان البيانات. يُوصى باتخاذ إجراءات تصحيحية فورية في المجالات المحددة.";
+        
+        // مقياس النضج الأمني
+        let maturityBars = '';
+        Object.entries(domainScores).forEach(([domain, domScore]) => {
+            const barColor = domScore >= 80 ? '#22d3ee' : domScore >= 50 ? '#fbbf24' : '#f43f5e';
+            maturityBars += `
+                <div style="margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;font-size:14px;">
+                        <span style="color:#c8c8e8;">${domain}</span>
+                        <span style="color:${barColor};">${domScore}%</span>
+                    </div>
+                    <div style="background:#2a2a3e;height:12px;border-radius:6px;overflow:hidden;margin-top:4px;">
+                        <div style="width:${domScore}%;height:100%;background:${barColor};border-radius:6px;"></div>
+                    </div>
+                </div>
+            `;
+        });
 
         const summaryHTML = `
             <div>
                 <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">الملخص التنفيذي</h2>
                 <p style="font-size:16px;line-height:1.8;color:#c8c8e8;margin-top:20px;">${executiveSummary}</p>
-                <p style="margin-top:20px;font-size:16px;color:#c8c8e8;">مستوى المخاطر العام: <span style="color:${levelColor};font-weight:bold;">${riskLevel}</span></p>
-                <p style="font-size:16px;color:#c8c8e8;">الدرجة تعني أن وضعك الأمني <span style="color:${levelColor};">${levelText}</span>.</p>
+                <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;margin-top:30px;">Security Maturity Score</h2>
+                ${maturityBars}
+                <p style="margin-top:20px;font-size:16px;color:#c8c8e8;">Overall Security Rating: <span style="color:${ratingColor};font-weight:bold;">${rating}</span></p>
+                <p style="font-size:16px;color:#c8c8e8;">Risk Level: <span style="color:${levelColor};font-weight:bold;">${riskLevel}</span></p>
             </div>
         `;
         const summaryCanvas = await captureElement(summaryHTML);
         doc.addPage();
         doc.addImage(summaryCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (summaryCanvas.height * imgWidth) / summaryCanvas.width);
 
-        // ---------- الصفحة 3: نقاط القوة والضعف ----------
+        // ---------- الصفحة 3: رادار تشارت + نقاط القوة والضعف ----------
+        // بناء SVG للرادار
+        const radarDomains = ['إدارة الهوية والوصول', 'المصادقة الثنائية', 'أمان الأجهزة', 'أمان الشبكات', 'النسخ الاحتياطي', 'الوعي الأمني'];
+        const radarScores = radarDomains.map(d => domainScores[d] || 0);
+        const center = 150, radius = 120, sides = 6;
+        let radarPoints = [];
+        radarScores.forEach((sc, i) => {
+            const angle = (Math.PI / 2) + (2 * Math.PI * i / sides);
+            const r = radius * sc / 100;
+            radarPoints.push(`${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`);
+        });
+        const radarSVG = `
+            <svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="#2a2a3e" stroke-width="1"/>
+                <circle cx="${center}" cy="${center}" r="${radius*0.67}" fill="none" stroke="#2a2a3e" stroke-width="1"/>
+                <circle cx="${center}" cy="${center}" r="${radius*0.33}" fill="none" stroke="#2a2a3e" stroke-width="1"/>
+                ${[...Array(sides)].map((_, i) => {
+                    const angle = (Math.PI / 2) + (2 * Math.PI * i / sides);
+                    return `<line x1="${center}" y1="${center}" x2="${center + radius * Math.cos(angle)}" y2="${center + radius * Math.sin(angle)}" stroke="#2a2a3e" stroke-width="1"/>`;
+                }).join('')}
+                <polygon points="${radarPoints.join(' ')}" fill="rgba(123,47,255,0.3)" stroke="#9b4fff" stroke-width="2"/>
+            </svg>
+        `;
+
         let strengthsHTML = '';
         result.strengths.forEach(s => strengthsHTML += `<li style="color:#22d3ee;">${s}</li>`);
         if (!result.strengths.length) strengthsHTML = '<li style="color:#9090b8;">لا توجد نقاط قوة بارزة</li>';
@@ -621,7 +685,8 @@ function downloadPDF() {
 
         const analysisHTML = `
             <div>
-                <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">تحليل نقاط القوة والضعف</h2>
+                <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">تحليل شامل</h2>
+                <div style="text-align:center;margin:20px 0;">${radarSVG}</div>
                 <h3 style="color:#22d3ee;margin-top:20px;">✅ نقاط القوة</h3>
                 <ul style="font-size:16px;">${strengthsHTML}</ul>
                 <h3 style="color:#f43f5e;margin-top:20px;">⚠️ نقاط الضعف</h3>
@@ -637,19 +702,29 @@ function downloadPDF() {
         doc.addPage();
         doc.addImage(analysisCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (analysisCanvas.height * imgWidth) / analysisCanvas.width);
 
-        // ---------- الصفحة 4: التهديدات المحتملة ----------
+        // ---------- الصفحة 4: مصفوفة المخاطر + التهديدات ----------
         const threat = result.threat;
-        const td = threatDetails[threat] || { prob: 'N/A', impact: 'N/A', prevention: 'اتبع الإرشادات الأمنية الأساسية.' };
+        const tm = threatMatrix[threat] || { likelihood: 'N/A', impact: 'N/A' };
         const exposureLevel = 100 - score;
 
         const threatHTML = `
             <div>
-                <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">التهديدات المحتملة</h2>
-                <h3 style="color:#fbbf24;margin-top:20px;">التهديد الأكثر احتمالاً: ${threat}</h3>
-                <p style="font-size:16px;"><strong>الاحتمالية:</strong> ${td.prob}</p>
-                <p style="font-size:16px;"><strong>التأثير:</strong> ${td.impact}</p>
-                <p style="font-size:16px;"><strong>الوقاية:</strong> ${td.prevention}</p>
-                <div style="margin-top:30px;">
+                <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">Risk Matrix</h2>
+                <table style="width:100%;border-collapse:collapse;margin:20px 0;color:#c8c8e8;font-size:16px;">
+                    <tr style="background:#1a1a2e;"><th style="padding:10px;border:1px solid #2a2a3e;">التهديد</th><th style="padding:10px;border:1px solid #2a2a3e;">الاحتمالية</th><th style="padding:10px;border:1px solid #2a2a3e;">التأثير</th></tr>
+                    ${Object.entries(threatMatrix).map(([t, v]) => `
+                        <tr>
+                            <td style="padding:10px;border:1px solid #2a2a3e;">${t}</td>
+                            <td style="padding:10px;border:1px solid #2a2a3e;text-align:center;">${v.likelihood}</td>
+                            <td style="padding:10px;border:1px solid #2a2a3e;text-align:center;">${v.impact}</td>
+                        </tr>
+                    `).join('')}
+                </table>
+                <h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;margin-top:30px;">التهديد الأكثر احتمالاً</h2>
+                <h3 style="color:#fbbf24;margin-top:20px;">${threat}</h3>
+                <p style="font-size:16px;"><strong>الاحتمالية:</strong> ${tm.likelihood}</p>
+                <p style="font-size:16px;"><strong>التأثير:</strong> ${tm.impact}</p>
+                <div style="margin-top:20px;">
                     <p style="font-size:16px;">مستوى التعرض: <strong style="color:#f43f5e;">${exposureLevel}%</strong></p>
                     <div style="background:#2a2a3e;height:20px;border-radius:10px;overflow:hidden;margin-top:10px;">
                         <div style="width:${exposureLevel}%;height:100%;background:linear-gradient(90deg,#f43f5e,#fbbf24);"></div>
@@ -685,7 +760,6 @@ function downloadPDF() {
         doc.addImage(planCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (planCanvas.height * imgWidth) / planCanvas.width);
 
         // ---------- الصفحة 6: ختامية ----------
-        // QR Code
         const qrContainer = document.createElement('div');
         qrContainer.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
         document.body.appendChild(qrContainer);
@@ -696,13 +770,19 @@ function downloadPDF() {
 
         const footerHTML = `
             <div style="text-align:center;">
-                <img src="assets/obsidian-aegis-logo.png" style="width:80px;margin-bottom:20px;" />
+                <img src="${logoBase64}" style="width:80px;margin-bottom:20px;" />
                 <h2 style="color:#9b4fff;">OBSIDIAN AEGIS</h2>
                 <p style="color:#9090b8;">Cyber Security • Intelligence • Consulting</p>
                 <hr style="border-color:#7b2fff;margin:20px 0;" />
                 <p style="font-size:16px;color:#c8c8e8;">Telegram Bot: @ObsidianAegisBot</p>
                 ${qrDataUrl ? `<img src="${qrDataUrl}" style="margin:20px auto;width:100px;" />` : ''}
-                <p style="font-size:12px;color:#9090b8;margin-top:30px;">هذا التقرير مبني على إجابات المستخدم ولا يعتبر تدقيقاً أمنياً أو اختبار اختراق فعلياً. النتائج لأغراض التوعية والتقييم الأولي فقط.</p>
+                <div style="margin-top:30px;padding:15px;border:1px solid #2a2a3e;background:#1a1a2e;">
+                    <p style="font-size:12px;color:#9090b8;text-align:right;">This report is an awareness assessment only. It does not constitute: Penetration Testing, Vulnerability Assessment, or Security Audit. The findings are based solely on user supplied responses.</p>
+                </div>
+                <div style="margin-top:20px;text-align:left;">
+                    <p style="font-size:10px;color:#9090b8;">CLASSIFICATION: CLIENT USE ONLY</p>
+                    <p style="font-size:10px;color:#9090b8;">Generated by: OBSIDIAN AEGIS™ Assessment Engine v2.0</p>
+                </div>
             </div>
         `;
         const footerCanvas = await captureElement(footerHTML);
