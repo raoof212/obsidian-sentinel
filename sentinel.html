@@ -166,6 +166,41 @@
             .analysis-block{flex-direction:column}
             .hst{display:none}.hor1,.hor2{display:none}.hem{width:110px;height:125px}
         }
+        /* تنسيقات التحليل حسب الفئة */
+.domain-score-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+.domain-score-bar {
+    width: 100%;
+    height: 8px;
+    background: #2a2a3e;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 10px;
+}
+.domain-score-fill {
+    height: 100%;
+    border-radius: 4px;
+}
+.maturity-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    margin: 5px 0 15px;
+}
+.knowledge-box {
+    background: rgba(123,47,255,0.08);
+    border: 1px solid rgba(123,47,255,0.2);
+    padding: 15px;
+    margin-top: 15px;
+    text-align: right;
+}
     </style>
 </head>
 <body>
@@ -484,14 +519,24 @@ function submitSurvey() {
         return;
     }
 
+    // تعريف المصفوفات وملؤها بالبيانات
+    const strengths = [], weaknesses = [];
+    questions.forEach((q, index) => {
+        const answer = q.options[selectedAnswers[index]];
+        if (answer.score >= 80 && answer.strength) {
+            strengths.push(answer.strength);
+        }
+        if (answer.score <= 30) {
+            weaknesses.push(q.category);
+        }
+    });
+
     const score = calculateScore();
     const ref = 'OA-' + new Date().getFullYear() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
     document.getElementById('surveyRef').textContent = 'REF: ' + ref;
 
-    const strengths = [], weaknesses = [];
     const threat = weaknesses.length > 0 ? (weaknesses[0] === 'إدارة الهوية والوصول' || weaknesses[0] === 'المصادقة الثنائية' ? 'اختراق الحسابات' : weaknesses[0] === 'أمان الشبكات' ? 'التنصت على البيانات' : weaknesses[0] === 'أمان الأجهزة' ? 'برمجيات خبيثة' : weaknesses[0] === 'النسخ الاحتياطي' ? 'فقدان البيانات' : 'التصيد الاحتيالي') : 'لا توجد تهديدات واضحة';
     const recommendation = score >= 80 ? 'حصن منيع. استمر في مراجعة إعداداتك دورياً.' : score >= 50 ? 'تحت المراقبة. عالج الأولويات العاجلة لتحسين وضعك.' : 'مكشوف رقمياً. ابدأ فوراً ببناء أساسيات الحماية.';
-
     progressContainer.classList.add('hidden');
     questionContainer.classList.add('hidden');
     navButtons.classList.add('hidden');
