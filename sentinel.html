@@ -606,7 +606,7 @@ function downloadPDF() {
             </div>
         `;
         const coverCanvas = await captureElement(coverHTML);
-        doc.addImage(coverCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (coverCanvas.height * imgWidth) / coverCanvas.width);
+        doc.addImage(coverCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
 
         // ---------- الصفحة 2: الملخص التنفيذي ----------
         let executiveSummary;
@@ -645,7 +645,7 @@ function downloadPDF() {
         doc.addPage();
         doc.setFillColor(11, 11, 31);
         doc.rect(0, 0, pageWidth, pageHeight, 'F');
-        doc.addImage(summaryCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (summaryCanvas.height * imgWidth) / summaryCanvas.width);
+        doc.addImage(summaryCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
 
         // ---------- الصفحة 3: رادار تشارت + نقاط القوة والضعف ----------
         // بناء SVG للرادار
@@ -702,7 +702,8 @@ function downloadPDF() {
         `;
         const analysisCanvas = await captureElement(analysisHTML);
         doc.addPage();
-        doc.addImage(analysisCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (analysisCanvas.height * imgWidth) / analysisCanvas.width);
+        doc.addImage(analysisCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
+
 
         // ---------- الصفحة 4: مصفوفة المخاطر + التهديدات ----------
         const threat = result.threat;
@@ -736,7 +737,9 @@ function downloadPDF() {
         `;
         const threatCanvas = await captureElement(threatHTML);
         doc.addPage();
-        doc.addImage(threatCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (threatCanvas.height * imgWidth) / threatCanvas.width);
+        doc.setFillColor(11, 11, 31);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.addImage(threatCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
 
         // ---------- الصفحة 5: خطة التحسين ----------
         let planHTML = '';
@@ -759,7 +762,9 @@ function downloadPDF() {
         const planFullHTML = `<div><h2 style="color:#fff;border-bottom:2px solid #7b2fff;padding-bottom:10px;">خطة التحسين الفورية</h2>${planHTML}</div>`;
         const planCanvas = await captureElement(planFullHTML);
         doc.addPage();
-        doc.addImage(planCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (planCanvas.height * imgWidth) / planCanvas.width);
+        doc.setFillColor(11, 11, 31);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.addImage(planCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
 
         // ---------- الصفحة 6: ختامية ----------
         const qrContainer = document.createElement('div');
@@ -789,7 +794,9 @@ function downloadPDF() {
         `;
         const footerCanvas = await captureElement(footerHTML);
         doc.addPage();
-        doc.addImage(footerCanvas.toDataURL('image/png'), 'PNG', margin, margin, imgWidth, (footerCanvas.height * imgWidth) / footerCanvas.width);
+        doc.setFillColor(11, 11, 31);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.addImage(footerCanvas.toDataURL('image/png'), 'PNG', 0, 0, pageWidth, pageHeight);
 
         // تذييل الصفحات
         const pageCount = doc.getNumberOfPages();
